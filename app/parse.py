@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 import requests
 from dataclasses import dataclass
 from enum import Enum
@@ -17,17 +19,45 @@ class Course:
     name: str
     short_description: str
     type: CourseType
+    modules: int
+    topics: int
+    duration: int
+
+
+def get_detail_course_info(course, course_type):
+    course_url = course.select_one("a")["href"]
+    page = requests.get(urljoin(BASE_URL, course_url)).content
+    soup = BeautifulSoup(page, "html.parser")
+
+    modules = int(soup.select_one(
+        "div.CourseModulesHeading_modulesNumber__GNdFP > p"
+    ).text.split()[0])
+    topics = int(soup.select_one(
+        "div.CourseModulesHeading_topicsNumber__PXMnR > p"
+    ).text.split()[0])
+    if course_type == CourseType.FULL_TIME:
+        duration = int(soup.select_one(
+            "div.CourseModulesHeading_courseDuration__f_c3H > p"
+        ).text.split()[0])
+    else:
+        duration = None
+
+    return (modules, topics, duration)
 
 
 def get_single_course(course, course_type: CourseType):
-    return Course(
-            name=course.select_one("span.typography_landingH3__vTjok")
-            .text.replace("Курс ", "")
-            .replace(" Вечірній", ""),
-            short_description=course.select_one("p").text,
-            type=course_type
+    modules, topics, duration = get_detail_course_info(course, course_type)
 
-        )
+    return Course(
+        name=course.select_one("span.typography_landingH3__vTjok")
+        .text.replace("Курс ", "")
+        .replace(" Вечірній", ""),
+        short_description=course.select_one("p").text,
+        type=course_type,
+        modules=modules,
+        topics=topics,
+        duration=duration
+    )
 
 
 def get_all_courses() -> list[Course]:
@@ -45,7 +75,7 @@ def get_all_courses() -> list[Course]:
 
 
 def main():
-    print(get_all_courses())
+    get_all_courses()
 
 
 if __name__ == '__main__':
