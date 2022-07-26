@@ -67,7 +67,9 @@ def get_all_courses() -> list[Course]:
     result = []
     for course_type in CourseType:
         course_block = soup.select_one(f"#{course_type.value}")
-        courses = course_block.select("section.CourseCard_cardContainer__7_4lK")
+        courses = course_block.select(
+            "section.CourseCard_cardContainer__7_4lK"
+        )
         for course in courses:
             result.append(get_single_course(course, course_type))
 
