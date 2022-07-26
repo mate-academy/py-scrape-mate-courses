@@ -26,8 +26,12 @@ def take_parameters_from_links(course, type) -> dict:
     soup = BeautifulSoup(course_page, "html.parser")
 
     other_params = {
-        "modules": soup.select_one("div.CourseModulesHeading_modulesNumber__GNdFP p").text.split()[0],
-        "topics": soup.select_one("div.CourseModulesHeading_topicsNumber__PXMnR p").text.split()[0],
+        "modules": soup.select_one(
+            "div.CourseModulesHeading_modulesNumber__GNdFP p"
+        ).text.split()[0],
+        "topics": soup.select_one(
+            "div.CourseModulesHeading_topicsNumber__PXMnR p"
+        ).text.split()[0],
     }
     if type == CourseType.FULL_TIME:
         other_params["duration"] = soup.select_one(
@@ -41,12 +45,16 @@ def get_all_courses() -> list[Course]:
 
     mate_page = requests.get(BASE_URL).content
     soup = BeautifulSoup(mate_page, "html.parser")
-    courses = soup.select(".section_scrollSection__RBDyT .CourseCard_cardContainer__7_4lK")
+    courses = soup.select(
+        ".section_scrollSection__RBDyT .CourseCard_cardContainer__7_4lK"
+    )
     result = []
 
     for course in courses:
         name = course.select_one(".typography_landingH3__vTjok").text
-        short_description = course.select_one(".typography_landingP1__N9PXd").text
+        short_description = course.select_one(
+            ".typography_landingP1__N9PXd"
+        ).text
         type = CourseType.FULL_TIME
 
         if name.split()[-1] == "Вечірній":
