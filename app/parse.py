@@ -22,7 +22,9 @@ class Course:
 def parse_single_course(course_soup, course_type) -> Course:
     return Course(
         name=course_soup.select_one(".typography_landingH3__vTjok").text,
-        short_description=course_soup.select_one(".CourseCard_courseDescription__Unsqj").text,
+        short_description=course_soup.select_one(
+            ".CourseCard_courseDescription__Unsqj"
+        ).text,
         type=course_type
     )
 
@@ -34,7 +36,10 @@ def get_courses(course_type):
     course_format = soup.select_one(f"#{course_type.value}")
     courses = course_format.select(".CourseCard_cardContainer__7_4lK")
 
-    return [parse_single_course(course_soup, course_type) for course_soup in courses]
+    return [
+        parse_single_course(course_soup, course_type)
+        for course_soup in courses
+    ]
 
 
 def get_all_courses() -> list[Course]:
