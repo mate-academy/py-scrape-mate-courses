@@ -80,8 +80,8 @@ def get_model_topic_duration(detail_page: BeautifulSoup):
 
     try:
         model_numtopic_duration["duration"] = detail_page.select_one(
-            ".CourseModulesHeading_courseDuration__f_c3H").get_text().split()[
-            0]
+            ".CourseModulesHeading_courseDuration__f_c3H").get_text(
+        ).split()[ 0]
     except AttributeError:
         pass
     return model_numtopic_duration
