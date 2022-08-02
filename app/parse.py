@@ -36,12 +36,10 @@ def get_all_courses() -> list[Course]:
         )
         for type_ in CourseType
     }
-
     courses_list = []
 
     for key, value in all_courses.items():
         for data in value:
-            # print(i.select("section"))
             courses_list.append(parse_single_course(data, key))
     return courses_list
 
