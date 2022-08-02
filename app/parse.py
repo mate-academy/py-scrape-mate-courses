@@ -19,7 +19,16 @@ class Course:
     type: CourseType
 
 
-def parse_single_course(soup: BeautifulSoup, course_type: str) -> Course:
+def check_course_type(soup: BeautifulSoup) -> str:
+    course_type = soup.select_one("a").text.split()[-1]
+    if course_type == "Вечірній":
+        return "part-time"
+
+    return "full-time"
+
+
+def parse_single_course(soup: BeautifulSoup) -> Course:
+    course_type = check_course_type(soup)
     return Course(
         name=soup.select_one("a").text,
         short_description=soup.select_one("div > p").text,
@@ -31,18 +40,12 @@ def get_all_courses() -> list[Course]:
     page = requests.get(HOME_URL).content
     soup = BeautifulSoup(page, "html.parser")
 
-    full_time_courses = soup.select(
-        "div#full-time > div.large-offset-1 > .CourseCard_cardContainer__7_4lK"
-    )
-    part_time_courses = soup.select(
-        "div#part-time > div.large-offset-1 > .CourseCard_cardContainer__7_4lK"
+    courses = soup.select(
+        ".large-offset-1 > .CourseCard_cardContainer__7_4lK"
     )
 
-    parsed_full_time = [
-        parse_single_course(soup, "full-time") for soup in full_time_courses
-    ]
-    parsed_part_time = [
-        parse_single_course(soup, "part-time") for soup in part_time_courses
+    parsed_courses = [
+        parse_single_course(course_soup) for course_soup in courses
     ]
 
-    return parsed_full_time + parsed_part_time
+    return parsed_courses
