@@ -20,7 +20,6 @@ class Course:
 
 
 def parse_single_course(product_soup: BeautifulSoup, type_: str) -> Course:
-    # print(product_soup, "\n")
     return Course(
         name=product_soup.select_one("span.typography_landingH3__vTjok").text,
         short_description=product_soup.select_one("p").text,
