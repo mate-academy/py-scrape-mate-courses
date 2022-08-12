@@ -40,18 +40,22 @@ def get_main_info(soup):
 
 def urls(home_soup: BeautifulSoup):
     return [urljoin(HOME_URL, tag['href'])
-            for tag in home_soup.find_all("a", {'href': re.compile("courses"), 'class': 'mb-16'})]
+            for tag in home_soup.find_all(
+            "a", {'href': re.compile("courses"), 'class': 'mb-16'})]
 
 
 def get_extra_info(url: str):
     page = requests.get(url).content
     soup = BeautifulSoup(page, "html.parser")
     extra_info = [
-        soup.select_one('.CourseModulesHeading_modulesNumber__GNdFP').text.split()[0],
-        soup.select_one('.CourseModulesHeading_topicsNumber__PXMnR').text.split()[0]
+        soup.select_one(
+            '.CourseModulesHeading_modulesNumber__GNdFP').text.split()[0],
+        soup.select_one(
+            '.CourseModulesHeading_topicsNumber__PXMnR').text.split()[0]
     ]
     try:
-        extra_info.append(soup.select_one('.CourseModulesHeading_courseDuration__f_c3H').text.split()[0])
+        extra_info.append(soup.select_one(
+            '.CourseModulesHeading_courseDuration__f_c3H').text.split()[0])
     except AttributeError:
         extra_info.append('unlimited')
     return extra_info
