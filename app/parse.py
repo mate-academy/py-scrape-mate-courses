@@ -77,7 +77,7 @@ def get_all_courses() -> list[Course]:
     part_time_soup = soup.select("#part-time .CourseCard_cardContainer__7_4lK")
     courses = full_time_courses(
         full_time_soup) + part_time_courses(part_time_soup)
-    print(courses)
+    return courses
 
 
 def main():
