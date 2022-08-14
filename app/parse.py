@@ -41,6 +41,28 @@ def take_parameters_from_links(course, type) -> dict:
     return other_params
 
 
+def get_data_from_course(course):
+    name = course.select_one(".typography_landingH3__vTjok").text
+    short_description = course.select_one(
+        ".typography_landingP1__N9PXd"
+    ).text
+    type = CourseType.FULL_TIME
+
+    if name.split()[-1] == "Вечірній":
+        type = CourseType.PART_TIME
+
+    other_parameters = take_parameters_from_links(course, type)
+
+    course_obj = Course(
+        name=name,
+        short_description=short_description,
+        type=type,
+        other_parameters=other_parameters,
+    )
+
+    return course_obj
+
+
 def get_all_courses() -> list[Course]:
 
     mate_page = requests.get(BASE_URL).content
@@ -51,22 +73,10 @@ def get_all_courses() -> list[Course]:
     result = []
 
     for course in courses:
-        name = course.select_one(".typography_landingH3__vTjok").text
-        short_description = course.select_one(
-            ".typography_landingP1__N9PXd"
-        ).text
-        type = CourseType.FULL_TIME
-
-        if name.split()[-1] == "Вечірній":
-            type = CourseType.PART_TIME
-
-        other_parameters = take_parameters_from_links(course, type)
-
-        course_obj = Course(
-            name=name,
-            short_description=short_description,
-            type=type,
-            other_parameters=other_parameters,
-        )
+        course_obj = get_data_from_course(course)
         result.append(course_obj)
     return result
+
+
+if __name__ == '__main__':
+    get_all_courses()
