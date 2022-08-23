@@ -34,6 +34,21 @@ def parse_single_course(education_soup: BeautifulSoup, course_type) -> dict:
     )
 
 
+def parse_single_course_optional(soup: BeautifulSoup) -> dict:
+    return dict(
+        modules=int(
+            soup.select_one(
+                ".CourseModulesHeading_modulesNumber__GNdFP > p"
+            ).text.split()[0]
+        ),
+        topics=int(
+            soup.select_one(
+                ".CourseModulesHeading_topicsNumber__PXMnR > p"
+            ).text.split()[0]
+        )
+    )
+
+
 def parse_course_detail(education_soup: BeautifulSoup, course_type) -> Course:
     course_detail = education_soup.select_one("a")["href"]
     course_url = urljoin(BASE_URL, course_detail)
@@ -41,56 +56,52 @@ def parse_course_detail(education_soup: BeautifulSoup, course_type) -> Course:
     soup = BeautifulSoup(page, "html.parser")
 
     course = parse_single_course(education_soup, course_type)
-    course["modules"] = int(
-        soup.select_one(
-            ".CourseModulesHeading_modulesNumber__GNdFP > p"
-        ).text.split()[0]
-    )
-    course["topics"] = int(
-        soup.select_one(
-            ".CourseModulesHeading_topicsNumber__PXMnR > p"
-        ).text.split()[0]
-    )
+    course_optional = parse_single_course_optional(soup)
 
     if course["type"] == CourseType.FULL_TIME:
-        course["duration"] = soup.select_one(
+        course_optional["duration"] = soup.select_one(
             ".CourseModulesHeading_courseDuration__f_c3H > p"
         ).text.split()[0]
     else:
-        course["duration"] = None
+        course_optional["duration"] = None
 
     return Course(
         name=course["name"],
         short_description=course["short_description"],
         type=course["type"],
-        modules=course["modules"],
-        topics=course["topics"],
-        duration=course["duration"],
+        modules=course_optional["modules"],
+        topics=course_optional["topics"],
+        duration=course_optional["duration"],
     )
+
+
+def create_courses_full_time(soup: BeautifulSoup) -> list[Course]:
+    full_time_courses = soup.select(
+        "#full-time .CourseCard_cardContainer__7_4lK"
+    )
+
+    return [
+        parse_course_detail(education_soup, CourseType.FULL_TIME)
+        for education_soup in full_time_courses
+    ]
+
+
+def create_courses_part_time(soup: BeautifulSoup) -> list[Course]:
+    part_time_courses = soup.select(
+        "#part-time .CourseCard_cardContainer__7_4lK"
+    )
+
+    return [
+        parse_course_detail(education_soup, CourseType.PART_TIME)
+        for education_soup in part_time_courses
+    ]
 
 
 def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
 
-    part_time_courses = soup.select(
-        "#part-time .CourseCard_cardContainer__7_4lK"
-    )
-    full_time_courses = soup.select(
-        "#full-time .CourseCard_cardContainer__7_4lK"
-    )
-
-    part_time_courses_list = [
-        parse_course_detail(education_soup, CourseType.PART_TIME)
-        for education_soup in part_time_courses
-    ]
-
-    full_time_courses_list = [
-        parse_course_detail(education_soup, CourseType.FULL_TIME)
-        for education_soup in full_time_courses
-    ]
-
-    return part_time_courses_list + full_time_courses_list
+    return create_courses_full_time(soup) + create_courses_part_time(soup)
 
 
 def main():
