@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
 
-HOME_URL = "https://mate.academy"
+HOME_URL = "https://mate.academy/"
 
 
 class CourseType(Enum):
@@ -17,6 +18,33 @@ class Course:
     name: str
     short_description: str
     type: CourseType
+    count_modules: str
+    count_topics: str
+    duration: str
+
+
+def parse_detail_of_course(full_course_name):
+    full_course_name = full_course_name.lower().split()
+    course_name = full_course_name[1].replace("/", "-")
+    if full_course_name[-1] == "вечірній":
+        course_name = f"{course_name}-parttime"
+
+    course_url = urljoin(HOME_URL, f"courses/{course_name}")
+    page = requests.get(course_url).content
+    soup = BeautifulSoup(page, "html.parser")
+
+    css_selector = ".CourseModulesHeading_headingGrid__50qAP > div > p"
+    course_modules_heading = soup.select(css_selector)
+
+    count_modules = course_modules_heading[0].text
+    count_topics = course_modules_heading[1].text
+    duration = (
+        course_modules_heading[2].text
+        if len(course_modules_heading) > 2
+        else "no information available"
+    )
+
+    return [count_modules, count_topics, duration]
 
 
 def parse_single_course(course_soup):
@@ -30,10 +58,15 @@ def parse_single_course(course_soup):
         else CourseType("full-time")
     )
 
+    detail_of_course = parse_detail_of_course(full_course_name=name)
+
     return Course(
         name=name,
         short_description=short_description,
-        type=course_type
+        type=course_type,
+        count_modules=detail_of_course[0],
+        count_topics=detail_of_course[1],
+        duration=detail_of_course[-1],
     )
 
 
