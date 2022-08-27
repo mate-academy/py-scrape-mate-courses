@@ -30,7 +30,11 @@ def parse_single_course(course_soup):
         else CourseType("full-time")
     )
 
-    return Course(name=name, short_description=short_description, type=course_type)
+    return Course(
+        name=name,
+        short_description=short_description,
+        type=course_type
+    )
 
 
 def get_all_courses() -> list[Course]:
