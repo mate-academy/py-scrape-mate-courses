@@ -1,11 +1,21 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple
 from enum import Enum
 from urllib.parse import urljoin
 
+import csv
 import requests
 from bs4 import BeautifulSoup
 
 HOME_URL = "https://mate.academy/"
+COURSES_OUTPUT_CSV_PATH = "course.csv"
+COURSES_FIELDS = [
+    "name",
+    "short_description",
+    "type",
+    "count_modules",
+    "count_topics",
+    "duration",
+]
 
 
 class CourseType(Enum):
@@ -23,7 +33,7 @@ class Course:
     duration: str
 
 
-def parse_detail_of_course(full_course_name):
+def parse_detail_of_course(full_course_name: str) -> list:
     full_course_name = full_course_name.lower().split()
     course_name = full_course_name[1].replace("/", "-")
     if full_course_name[-1] == "вечірній":
@@ -47,7 +57,7 @@ def parse_detail_of_course(full_course_name):
     return [count_modules, count_topics, duration]
 
 
-def parse_single_course(course_soup):
+def parse_single_course(course_soup: BeautifulSoup) -> Course:
     name = course_soup.select_one(".typography_landingH3__vTjok").text
     short_description = course_soup.select_one(
         ".CourseCard_flexContainer__dJk4p"
@@ -78,5 +88,12 @@ def get_all_courses() -> list[Course]:
     return [parse_single_course(course_soup) for course_soup in courses]
 
 
+def write_courses_to_csv(courses: [Course]) -> None:
+    with open(COURSES_OUTPUT_CSV_PATH, "w") as file:
+        writer = csv.writer(file)
+        writer.writerow(COURSES_FIELDS)
+        writer.writerows(astuple(course) for course in courses)
+
+
 if __name__ == "__main__":
-    get_all_courses()
+    a = get_all_courses()
