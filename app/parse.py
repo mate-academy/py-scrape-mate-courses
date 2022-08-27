@@ -96,4 +96,4 @@ def write_courses_to_csv(courses: [Course]) -> None:
 
 
 if __name__ == "__main__":
-    a = get_all_courses()
+    get_all_courses()
