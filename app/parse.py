@@ -1,21 +1,12 @@
-from dataclasses import dataclass, astuple
+from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urljoin
 
-import csv
 import requests
 from bs4 import BeautifulSoup
+from tqdm.notebook import tqdm
 
 HOME_URL = "https://mate.academy/"
-COURSES_OUTPUT_CSV_PATH = "course.csv"
-COURSES_FIELDS = [
-    "name",
-    "short_description",
-    "type",
-    "count_modules",
-    "count_topics",
-    "duration",
-]
 
 
 class CourseType(Enum):
@@ -61,7 +52,7 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
     name = course_soup.select_one(".typography_landingH3__vTjok").text
     short_description = course_soup.select_one(
         ".CourseCard_flexContainer__dJk4p"
-    ).text
+    ).text.replace("Детальніше", "")
     course_type = (
         CourseType("part-time")
         if name.split()[-1] == "Вечірній"
@@ -85,14 +76,7 @@ def get_all_courses() -> list[Course]:
     soup = BeautifulSoup(page, "html.parser")
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
 
-    return [parse_single_course(course_soup) for course_soup in courses]
-
-
-def write_courses_to_csv(courses: [Course]) -> None:
-    with open(COURSES_OUTPUT_CSV_PATH, "w") as file:
-        writer = csv.writer(file)
-        writer.writerow(COURSES_FIELDS)
-        writer.writerows(astuple(course) for course in courses)
+    return [parse_single_course(course_soup) for course_soup in tqdm(courses)]
 
 
 if __name__ == "__main__":
