@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 HOME_URL = "https://mate.academy/"
 
