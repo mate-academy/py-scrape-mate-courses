@@ -25,9 +25,9 @@ def parse_single_course(courses_soup: BeautifulSoup) -> Course:
     short_description = courses_soup.select_one(
         ".CourseCard_courseDescription__Unsqj").text
     course_type = (
-        "part-time" if name.split()[-1] == "Вечерний" else "full-time"
+        CourseType("part-time") if name.split()[-1] == "Вечерний" else CourseType("full-time")
     )
-    return Course(name, short_description, course_type)
+    return Course(name=name, short_description=short_description, type=course_type)
 
 
 def get_all_courses() -> list[Course]:
