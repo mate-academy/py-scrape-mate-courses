@@ -17,8 +17,14 @@ for link in links:
     soup = BeautifulSoup(content, "html.parser")
 
     name = str(link).split("/")[-1]
-    num_modules = soup.select_one(".CourseModulesHeading_modulesNumber__GNdFP > p").text
-    num_topics = soup.select_one(".CourseModulesHeading_topicsNumber__PXMnR > p").text
-    duration = soup.select_one(".CourseModulesHeading_courseDuration__f_c3H > p").text
+    num_modules = soup.select_one(
+        ".CourseModulesHeading_modulesNumber__GNdFP > p"
+    ).text
+    num_topics = soup.select_one(
+        ".CourseModulesHeading_topicsNumber__PXMnR > p"
+    ).text
+    duration = soup.select_one(
+        ".CourseModulesHeading_courseDuration__f_c3H > p"
+    ).text
 
     print(f"{name}: {num_modules}, {num_topics}, {duration}")
