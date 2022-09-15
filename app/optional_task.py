@@ -4,14 +4,16 @@ import requests
 ROOT = "https://mate.academy/"
 WEBSITE = f'{ROOT}/courses'
 
-result = requests.get(WEBSITE)
-content = result.text
-soup = BeautifulSoup(content, "html.parser")
-box = soup.find(class_='cell large-6 large-offset-1 mb-32')
-links = [link['href'] for link in box.find_all('a', class_='mb-16', href=True)]
-
 
 def course_detailed_info():
+
+    result = requests.get(WEBSITE)
+    content = result.text
+    soup = BeautifulSoup(content, "html.parser")
+    box = soup.find(class_='cell large-6 large-offset-1 mb-32')
+    links = [link['href'] for link in
+             box.find_all('a', class_='mb-16', href=True)]
+
     for link in links:
         result = requests.get(f'{ROOT}/{link}')
         content = result.text
