@@ -20,13 +20,13 @@ class Course:
 
 
 def parse_single_course(course_soup) -> Course:
+    course_title = course_soup.select_one(".typography_landingH3__vTjok").text
     single_course = dict(
-        name=course_soup.select_one(".typography_landingH3__vTjok").text,
+        name=course_title,
         short_description=course_soup.select_one
         (".CourseCard_flexContainer__dJk4p > p"
          ).text,
-        type=CourseType("part-time") if "Вечірній" in str(
-            course_soup.select_one(".typography_landingH3__vTjok").text)
+        type=CourseType("part-time") if "Вечірній" in course_title
         else CourseType("full-time")
     )
 
