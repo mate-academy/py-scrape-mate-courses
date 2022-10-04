@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-import re
 from urllib.parse import urljoin
 
 import requests
