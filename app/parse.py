@@ -43,7 +43,8 @@ def parse_single_course(course_soup: BeautifulSoup) -> [Course]:
         short_description=course_soup.select_one(
             COURSE_DESCRIPTION_SELECTOR
         ).text.strip(),
-        learning_type=CourseType.PART_TIME if course_soup.select_one("[rel=nofollow]")
+        learning_type=CourseType.PART_TIME
+        if course_soup.select_one("[rel=nofollow]")
         else CourseType.FULL_TIME,
         count_of_modules=additional_info[0],
         count_of_topics=additional_info[1],
