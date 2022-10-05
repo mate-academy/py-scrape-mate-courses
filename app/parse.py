@@ -26,7 +26,9 @@ def parse_single_course(course_soup: BeautifulSoup) -> [Course]:
             ".CourseCard_courseDescription__Unsqj"
         ).text,
         type=CourseType.PART_TIME
-        if course_soup.select_one(".typography_landingH3__vTjok").text.split()[-1] == "Вечірній"
+        if course_soup.select_one(
+            ".typography_landingH3__vTjok"
+        ).text.split()[-1] == "Вечірній"
         else CourseType.FULL_TIME
     )
 
