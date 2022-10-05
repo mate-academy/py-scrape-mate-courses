@@ -73,7 +73,8 @@ def get_course(course_type: CourseType):
             ).contents[0]
         )
 
-        logging.info(f"Start parsing course: {' '.join(course_name.split()[1:])}")
+        logging.info(f"Start parsing course: "
+                     f"{' '.join(course_name.split()[1:])}")
 
         short_description = str(
             courses[el_index].select_one(
