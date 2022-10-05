@@ -21,7 +21,7 @@ class CourseType(Enum):
 class Course:
     name: str
     short_description: str
-    type: CourseType
+    learning_type: CourseType
     count_of_modules: str
     count_of_topics: str
     duration: str
@@ -43,7 +43,7 @@ def parse_single_course(course_soup: BeautifulSoup) -> [Course]:
         short_description=course_soup.select_one(
             COURSE_DESCRIPTION_SELECTOR
         ).text.strip(),
-        type=CourseType.PART_TIME if course_soup.select_one("[rel=nofollow]")
+        learning_type=CourseType.PART_TIME if course_soup.select_one("[rel=nofollow]")
         else CourseType.FULL_TIME,
         count_of_modules=additional_info[0],
         count_of_topics=additional_info[1],
