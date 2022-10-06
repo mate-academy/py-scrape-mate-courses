@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 import requests
-from bs4 import BeautifulSoup as bsp4
+from bs4 import BeautifulSoup as Bsp4
 
 
 MATE_ACADEMY_URL = "https://mate.academy"
@@ -19,15 +19,15 @@ class CourseType(Enum):
 class Course:
     name: str
     short_description: str
-    type: CourseType
+    course_type: CourseType
     count_of_modules: str
     count_of_topics: str
     duration: str
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Course: {self.name}\n" \
                f"{self.short_description}\n" \
-               f"{self.type.value}\n" \
+               f"{self.course_type.value}\n" \
                f"{self.count_of_modules}\n" \
                f"{self.count_of_topics}\n" \
                f"{self.duration}\n" \
@@ -44,19 +44,19 @@ logging.basicConfig(
 )
 
 
-def parse_all_pages(url) -> bsp4:
+def parse_all_pages(url: str) -> Bsp4:
     response = requests.get(url).content
-    return bsp4(response, "html.parser")
+    return Bsp4(response, "html.parser")
 
 
-def select_from_tag(url, tag) -> str:
+def select_from_tag(url: str, tag: str) -> str:
     info_from_tag = parse_all_pages(url).select_one(tag)
     if info_from_tag:
         return str(info_from_tag.contents[0])
     return "No time"
 
 
-def get_course(course_type: CourseType):
+def get_course(course_type: CourseType) -> [Course]:
     courses = parse_all_pages(MATE_ACADEMY_URL).select(
         f"#{course_type.value} > .cell > .CourseCard_cardContainer__7_4lK"
     )
@@ -106,7 +106,7 @@ def get_course(course_type: CourseType):
             Course(
                 name=course_name,
                 short_description=short_description,
-                type=course_type,
+                course_type=course_type,
                 count_of_modules=count_of_modules,
                 count_of_topics=count_of_topics,
                 duration=duration,
@@ -120,5 +120,5 @@ def get_all_courses() -> list[Course]:
     return get_course(CourseType.FULL_TIME) + get_course(CourseType.PART_TIME)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(get_all_courses())
