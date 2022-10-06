@@ -31,7 +31,7 @@ class Course:
                f"{self.count_of_modules}\n" \
                f"{self.count_of_topics}\n" \
                f"{self.duration}\n" \
-               f"----------------------------------------------\n"
+               f"{40 * '-'}\n"
 
 
 logging.basicConfig(
@@ -82,22 +82,24 @@ def get_course(course_type: CourseType):
             ).contents[0]
         )
 
+        tag_name = ".typography_landingP2__KdC5Q"
+
         count_of_modules = select_from_tag(
             path_to_detail,
             ".CourseModulesHeading_modulesNumber__GNdFP > "
-            ".typography_landingP2__KdC5Q"
+            f"{tag_name}"
         )
 
         count_of_topics = select_from_tag(
             path_to_detail,
             ".CourseModulesHeading_topicsNumber__PXMnR > "
-            ".typography_landingP2__KdC5Q"
+            f"{tag_name}"
         )
 
         duration = select_from_tag(
             path_to_detail,
             ".CourseModulesHeading_courseDuration__f_c3H > "
-            ".typography_landingP2__KdC5Q"
+            f"{tag_name}"
         )
 
         all_courses.append(
