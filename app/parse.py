@@ -33,9 +33,6 @@ def parse_single_course(course_soup: BeautifulSoup) -> [Course]:
     )
 
 
-# def get_single_page
-
-
 def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
@@ -45,6 +42,7 @@ def get_all_courses() -> list[Course]:
     all_courses = [parse_single_course(course) for course in courses]
 
     return all_courses
+    
 
-
-get_all_courses()
+if __name__ == "__main__":
+    get_all_courses()
