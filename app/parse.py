@@ -11,7 +11,7 @@ class CourseType(Enum):
 class Course:
     name: str
     short_description: str
-    type: CourseType
+    course_type: CourseType
 
 
 def get_all_courses() -> list[Course]:
