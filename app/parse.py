@@ -23,7 +23,7 @@ class Course:
     type: CourseType
 
 
-def additional_info(url):
+def additional_info(url: str) -> list:
     course_url = urljoin(BASE_URL, url)
     about_course = requests.get(course_url).content
     soup = BeautifulSoup(about_course, "html.parser")
