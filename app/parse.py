@@ -20,7 +20,7 @@ class Course:
     count_of_modules: str
     count_of_topics: str
     duration: str
-    type: CourseType
+    course_type: CourseType
 
 
 def additional_info(url: str) -> list:
@@ -40,7 +40,7 @@ def get_all_courses() -> list[Course]:
     return [
         Course(name=course.select_one(name).text.strip(),
                short_description=course.select_one(description).text.strip(),
-               type=CourseType.PART_TIME if course.select("[rel=nofollow]")
+               course_type=CourseType.PART_TIME if course.select("[rel=nofollow]")
                else CourseType.FULL_TIME,
                count_of_modules=additional_info(course.a["href"])[0],
                count_of_topics=additional_info(course.a["href"])[1],
