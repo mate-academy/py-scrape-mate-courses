@@ -13,7 +13,7 @@ def test_get_all_courses():
 
     for course_type in CourseType:
         course_names = [
-            course.name for course in all_courses if course.type == course_type
+            course.name for course in all_courses if course.course_type == course_type
         ]
 
         for course in FOR_SURE_THIS_COURSES:
