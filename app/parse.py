@@ -63,7 +63,6 @@ def get_courses_by_course_type(course_type: CourseType) -> list[Course]:
     return courses_list
 
 
-
 def get_all_courses() -> list[Course]:
     courses_list = []
     for course_type in CourseType:
