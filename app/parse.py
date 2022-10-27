@@ -24,19 +24,32 @@ class Course:
     duration: str
 
 
-def get_single_course(course: BeautifulSoup, course_type: CourseType) -> Course:
+def get_single_course(
+        course: BeautifulSoup,
+        course_type: CourseType
+) -> Course:
     name = course.select_one(".typography_landingH3__vTjok").text
-    short_description = course.select_one(".CourseCard_courseDescription__Unsqj").text
+    short_description = course.select_one(
+        ".CourseCard_courseDescription__Unsqj").text
     course_link = course.select_one(".CourseCard_button__HTQvE").get("href")
     course_url = urljoin(BASE_URL, course_link)
     request = requests.get(course_url).content
     soup = BeautifulSoup(request, "html.parser")
-    modules = soup.select_one(".CourseModulesHeading_modulesNumber__GNdFP").text
+    modules = soup.select_one(
+        ".CourseModulesHeading_modulesNumber__GNdFP").text
     topics = soup.select_one(".CourseModulesHeading_topicsNumber__PXMnR").text
     duration = None
     if course_type == CourseType.FULL_TIME:
-        duration = soup.select_one(".CourseModulesHeading_courseDuration__f_c3H").text
-    return Course(name, short_description, course_type, modules, topics, duration)
+        duration = soup.select_one(
+            ".CourseModulesHeading_courseDuration__f_c3H").text
+    return Course(
+        name,
+        short_description,
+        course_type,
+        modules,
+        topics,
+        duration
+    )
 
 
 def get_courses_by_course_type(course_type: CourseType) -> list[Course]:
@@ -57,5 +70,5 @@ def get_all_courses() -> list[Course]:
     return courses_list
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     get_all_courses()
