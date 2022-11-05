@@ -57,9 +57,9 @@ def pars_single_course(course_soup: Tag) -> Course:
         name=course_name,
         short_description=course_description,
 
-        course_type=CourseType.PART_TIME
+        course_type=CourseType.PART_TIME.value
         if course_name.split()[-1] == "Вечірній"
-        else CourseType.FULL_TIME,
+        else CourseType.FULL_TIME.value,
 
         modules=number_modules,
         topics=number_topics,
