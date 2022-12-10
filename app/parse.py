@@ -22,6 +22,10 @@ class Course:
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
     print(dict(
         name=course_soup.select_one(".typography_landingH3__vTjok"),
+        short_description=course_soup.select_one(
+            ".typography_landingP1__N9PXd"
+        ).text,
+
     ))
 
 
@@ -33,9 +37,9 @@ def get_all_courses() -> list[Course]:
     return [parse_single_course(course_soup) for course_soup in courses]
 
 
-def main():
+def main() -> None:
     get_all_courses()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
