@@ -24,23 +24,17 @@ def parse_single_course(
         course_soup: BeautifulSoup,
         course_type: Any
 ) -> [Course]:
+    soup_courses = course_soup.select("span.typography_landingH3__vTjok")
+    soup_description = course_soup.select("div p")[3:]
+    list_courses = [i.text for i in soup_courses]
+    list_description = [desc.text for desc in soup_description]
 
-    list_courses = []
-    list_description = []
-    for i in course_soup.select("span.typography_landingH3__vTjok"):
-        list_courses.append(i.text)
-    for descr in course_soup.select("div p")[3:]:
-        list_description.append(descr.text)
-    print(len(list_courses))
-    print(len(list_description))
-    for i in range(len(list_courses)):
-        Course(name=list_courses[i],
-               short_description=list_description[i],
-               course_type=course_type)
-    return [Course(
-        name=list_courses[i],
-        short_description=list_description[i],
-        course_type=course_type) for i in range(len(list_courses))]
+    return [
+        Course(
+            name=list_courses[i],
+            short_description=list_description[i],
+            course_type=course_type) for i, course in enumerate(list_courses)
+    ]
 
 
 def get_all_courses() -> list[Course]:
