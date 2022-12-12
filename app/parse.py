@@ -23,7 +23,9 @@ class Course:
     course_type: CourseType
 
 
-def get_course_program(course_soup: BeautifulSoup, course_type: CourseType) -> tuple[int]:
+def get_course_program(
+        course_soup: BeautifulSoup, course_type: CourseType
+) -> tuple[int]:
     link_to_program = course_soup.select_one("a")["href"]
     page = requests.get(urljoin(BASE_URL, link_to_program)).content
     soup = BeautifulSoup(page, "html.parser")
