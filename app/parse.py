@@ -50,7 +50,7 @@ def get_course_counting(course_url: str) -> tuple[int, int, int | None]:
     )
 
     if duration:
-        duration_count = duration.text.split()[0]
+        duration_count = int(duration.text.split()[0])
     else:
         duration_count = None
 
