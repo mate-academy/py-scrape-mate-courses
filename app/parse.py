@@ -21,6 +21,7 @@ class Course:
 
 
 def parse_course(course_soup: BeautifulSoup) -> Course:
+
     course_name = course_soup.select_one(".typography_landingH3__vTjok").text
     short_description = course_soup.select_one(
         ".CourseCard_courseDescription__Unsqj"
