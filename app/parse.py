@@ -39,7 +39,7 @@ def parse_detail_page(course_url: str, course_type: CourseType) -> tuple:
             ".CourseModulesHeading_courseDuration__f_c3H p"
         ).get_text()
     else:
-        duration = 'All the time you need'
+        duration = "All the time you need"
 
     return modules, topics, duration
 
