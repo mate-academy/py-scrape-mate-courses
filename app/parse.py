@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
+
 import requests
 from bs4 import BeautifulSoup
+
 
 BASE_URL = "https://mate.academy/"
 
