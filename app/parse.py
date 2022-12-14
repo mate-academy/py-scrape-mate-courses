@@ -19,18 +19,28 @@ class Course:
     course_type: CourseType
 
 
-def create_single_course(course_soup, time):
+def create_single_course(course_soup: BeautifulSoup, time: str) -> Course:
     return Course(
         name=course_soup.select_one(".typography_landingH3__vTjok").text,
-        short_description=course_soup.select_one(".CourseCard_flexContainer__dJk4p").text,
-        course_type=CourseType.FULL_TIME if CourseType.FULL_TIME.value == time else CourseType.PART_TIME
+        short_description=course_soup.select_one(
+            ".CourseCard_flexContainer__dJk4p"
+        ).text,
+        course_type=(
+            CourseType.FULL_TIME
+            if CourseType.FULL_TIME.value == time
+            else CourseType.PART_TIME
+        )
     )
 
 
 def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
-    courses = soup.select_one("#all-courses").select(".section_scrollSection__RBDyT")
+    courses = soup.select_one(
+        "#all-courses"
+    ).select(
+        ".section_scrollSection__RBDyT"
+    )
     coursers_list = []
 
     for course_group in courses:
