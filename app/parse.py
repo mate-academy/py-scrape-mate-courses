@@ -30,12 +30,12 @@ def course_additional_info(url: str, course_type: CourseType) -> tuple:
     num_of_modules = int(
         soup.select_one(
             ".CourseModulesHeading_modulesNumber__GNdFP"
-        ).text.split(" ")[0]
+        ).text.split()[0]
     )
     num_of_topics = int(
         soup.select_one(
             ".CourseModulesHeading_topicsNumber__PXMnR"
-        ).text.split(" ")[0]
+        ).text.split()[0]
     )
     if course_type == CourseType.FULL_TIME:
         duration = soup.select_one(
