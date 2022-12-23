@@ -54,4 +54,4 @@ def get_all_courses() -> [Course]:
 
 
 if __name__ == "__main__":
-    print(get_all_courses())
+    get_all_courses()
