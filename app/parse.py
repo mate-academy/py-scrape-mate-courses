@@ -36,23 +36,25 @@ def parse_single_course(
 def get_all_courses() -> list[Course]:
     page = requests.get("https://mate.academy/").content
     soup = BeautifulSoup(page, "html.parser")
-    courses_full_time = soup.select(
-        "#full-time > div > .CourseCard_cardContainer__7_4lK"
-    )
-    courses_part_time = soup.select(
-        "#part-time > div > .CourseCard_cardContainer__7_4lK"
-    )
+    courses = soup.select(".CourseCard_cardContainer__7_4lK")
+    parse_result = []
 
-    part_time = [
-        parse_single_course(course_soup, CourseType.PART_TIME)
-        for course_soup in courses_full_time
-    ]
-    full_time = [
-        parse_single_course(course_soup, CourseType.FULL_TIME)
-        for course_soup in courses_part_time
-    ]
+    for course_soup in courses:
+        name = course_soup.select_one(
+            ".typography_landingH3__vTjok"
+        ).text
+        if "Вечірній" in name:
+            parse_result.append(
+                parse_single_course(
+                    course_soup, CourseType.PART_TIME
+                ))
+        else:
+            parse_result.append(
+                parse_single_course(
+                    course_soup, CourseType.FULL_TIME
+                ))
 
-    return part_time + full_time
+    return parse_result
 
 
 if __name__ == "__main__":
