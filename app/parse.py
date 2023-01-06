@@ -1,5 +1,7 @@
+import sys
 import time
 import asyncio
+import logging
 from enum import Enum
 from urllib.parse import urljoin
 from dataclasses import dataclass
@@ -9,6 +11,14 @@ from bs4 import BeautifulSoup, Tag
 
 
 BASE_URL = "https://mate.academy"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="--> %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 
 class CourseType(Enum):
@@ -26,15 +36,41 @@ class Course:
     course_duration: str | None
 
 
-def get_course_parameter(
-        course_info_soup: BeautifulSoup,
-        div_class: str
-) -> str:
-    course_parameter_info = course_info_soup.select_one(div_class)
-    return (
-        course_parameter_info.text.split()[0]
-        if course_parameter_info
-        else None
+async def get_all_courses() -> list[Course]:
+    logging.info(f"Stars parsing of {BASE_URL}")
+    page = httpx.get(BASE_URL).content
+    logging.info(f"Get request from Mate")
+    soup = BeautifulSoup(page, "html.parser")
+    courses_soup = soup.select(".CourseCard_cardContainer__7_4lK")
+    all_courses_info = await asyncio.gather(*[
+        get_course(course_soup) for course_soup in courses_soup
+    ])
+    return list(all_courses_info)
+
+
+async def get_course(course_soup: Tag) -> Course:
+    course_info = course_soup.select_one(
+        ".typography_landingH3__vTjok"
+    ).text.split()
+    course_url = urljoin(BASE_URL, course_soup.select_one("a")["href"])
+
+    logging.info(f"Stars parsing details for {course_url}")
+    modules_number, topics_number, course_duration = (
+        await get_course_info(course_url)
+    )
+    logging.info(f"Get details for {course_info[1]}")
+
+    return Course(
+        name=course_info[1],
+        short_description=course_soup.select_one(
+            ".typography_landingP1__N9PXd"
+        ).text,
+        course_type=CourseType.PART_TIME
+        if "Вечірній" in course_info
+        else CourseType.FULL_TIME,
+        modules_number=modules_number,
+        topics_number=topics_number,
+        course_duration=course_duration,
     )
 
 
@@ -57,38 +93,16 @@ async def get_course_info(course_url: str) -> tuple:
     return modules_number, topics_number, course_duration
 
 
-async def get_course(course_soup: Tag) -> Course:
-    course_info = course_soup.select_one(
-        ".typography_landingH3__vTjok"
-    ).text.split()
-    course_url = urljoin(BASE_URL, course_soup.select_one("a")["href"])
-
-    modules_number, topics_number, course_duration = (
-        await get_course_info(course_url)
+def get_course_parameter(
+        course_info_soup: BeautifulSoup,
+        div_class: str
+) -> str:
+    course_parameter_info = course_info_soup.select_one(div_class)
+    return (
+        course_parameter_info.text.split()[0]
+        if course_parameter_info
+        else None
     )
-
-    return Course(
-        name=course_info[1],
-        short_description=course_soup.select_one(
-            ".typography_landingP1__N9PXd"
-        ).text,
-        course_type=CourseType.PART_TIME
-        if "Вечірній" in course_info
-        else CourseType.FULL_TIME,
-        modules_number=modules_number,
-        topics_number=topics_number,
-        course_duration=course_duration,
-    )
-
-
-async def get_all_courses() -> list[Course]:
-    page = httpx.get(BASE_URL).content
-    soup = BeautifulSoup(page, "html.parser")
-    courses_soup = soup.select(".CourseCard_cardContainer__7_4lK")
-    all_courses_info = await asyncio.gather(*[
-        get_course(course_soup) for course_soup in courses_soup
-    ])
-    return list(all_courses_info)
 
 
 if __name__ == "__main__":
