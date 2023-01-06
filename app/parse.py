@@ -39,7 +39,7 @@ class Course:
 async def get_all_courses() -> list[Course]:
     logging.info(f"Stars parsing of {BASE_URL}")
     page = httpx.get(BASE_URL).content
-    logging.info(f"Get request from Mate")
+    logging.info("Get request from Mate")
     soup = BeautifulSoup(page, "html.parser")
     courses_soup = soup.select(".CourseCard_cardContainer__7_4lK")
     all_courses_info = await asyncio.gather(*[
