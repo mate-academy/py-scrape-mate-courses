@@ -19,11 +19,12 @@ class Course:
 
 def pars_single_curse(course_soup: BeautifulSoup) -> Course:
     name = course_soup.select_one("span.typography_landingH3__vTjok").text
-    short_description = course_soup.select_one("p.typography_landingP1__N9PXd").text
-    course_type = CourseType.PART_TIME if name.split()[-1] == "Вечерний" else CourseType.FULL_TIME
+    description = course_soup.select_one("p.typography_landingP1__N9PXd").text
+    course_type = CourseType.PART_TIME \
+        if name.split()[-1] == "Вечерний" else CourseType.FULL_TIME
     return Course(
         name=name,
-        short_description=short_description,
+        short_description=description,
         course_type=course_type
     )
 
@@ -35,9 +36,9 @@ def get_all_courses() -> list[Course]:
     return [pars_single_curse(course_soup) for course_soup in courses_soup]
 
 
-def main():
+def main() -> None:
     print(get_all_courses())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
