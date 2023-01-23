@@ -45,7 +45,8 @@ def get_additional_info(url: str) -> tuple:
 
 
 def parse_courses(course_soup: BeautifulSoup) -> Course:
-    if course_soup.select_one(".typography_landingH3__vTjok").text.split()[-1] == "Вечірній":
+    if course_soup.select_one(
+            ".typography_landingH3__vTjok").text.split()[-1] == "Вечірній":
         course_type = CourseType.PART_TIME
     else:
         course_type = CourseType.FULL_TIME
@@ -55,8 +56,10 @@ def parse_courses(course_soup: BeautifulSoup) -> Course:
     )
 
     return Course(
-        name=course_soup.select_one(".typography_landingH3__vTjok").text.split()[1],
-        short_description=course_soup.select_one("div.CourseCard_flexContainer__dJk4p > p").text,
+        name=course_soup.select_one(
+            ".typography_landingH3__vTjok").text.split()[1],
+        short_description=course_soup.select_one(
+            "div.CourseCard_flexContainer__dJk4p > p").text,
         course_type=course_type,
         modules=modules,
         topics=topics,
@@ -73,5 +76,5 @@ def get_all_courses() -> list[Course]:
     return [parse_courses(course_soup) for course_soup in courses]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(get_all_courses())
