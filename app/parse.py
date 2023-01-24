@@ -36,7 +36,7 @@ def get_all_courses() -> list[Course]:
     page = requests.get("https://mate.academy/ru").content
     soup = BeautifulSoup(page, "html.parser")
     courses_soup = soup.select(".CourseCard_cardContainer__7_4lK")
-    return [pars_single_curse(course_soup) for course_soup in courses_soup]
+    return [pars_single_course(course_soup) for course_soup in courses_soup]
 
 
 def main() -> None:
