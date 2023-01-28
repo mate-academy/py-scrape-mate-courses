@@ -2,7 +2,7 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag, ResultSet
 import fake_useragent
 import requests
 
@@ -26,7 +26,7 @@ class Course:
     duration: str
 
 
-def pars_single_course(section) -> tuple:
+def pars_single_course(section: Tag) -> tuple:
     return (
         section.select_one("a")["href"],
         section.select_one("a").text,
@@ -40,18 +40,28 @@ def detailed_course_data(course_url: str) -> list:
 
     div = soup.find_all(
         "p",
-        attrs={"class": "typography_landingP2__KdC5Q CourseModulesHeading_text__EdrEk"},
+        attrs={
+            "class": "typography_landingP2__KdC5Q"
+                     " CourseModulesHeading_text__EdrEk"
+        },
     )
 
     return [p_tag.text for p_tag in div]
 
 
-def course_list_generator(soup, course_type) -> list[Course]:
+def course_list_generator(
+        soup: ResultSet, course_type: CourseType
+) -> list[Course]:
     courses = []
 
     for section in soup:
-        course_url, course_name, course_description = pars_single_course(section)
+        (
+            course_url,
+            course_name,
+            course_description
+        ) = pars_single_course(section)
         course_data = detailed_course_data(course_url)
+        duration = course_data[2] if len(course_data) == 3 else "Невідома"
 
         courses.append(
             Course(
@@ -60,7 +70,7 @@ def course_list_generator(soup, course_type) -> list[Course]:
                 course_type=course_type,
                 modules=course_data[0],
                 topics=course_data[1],
-                duration=course_data[2] if len(course_data) == 3 else "Невідома",
+                duration=duration,
             )
         )
 
