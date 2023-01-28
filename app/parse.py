@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 from enum import Enum
 
@@ -81,5 +82,11 @@ def get_all_courses() -> list[Course]:
 
 
 if __name__ == "__main__":
-    for course in get_all_courses():
+    start = time.perf_counter()
+    all_courses = get_all_courses()
+    end = time.perf_counter()
+
+    for course in all_courses:
         print(course)
+
+    print("\n Elapsed:", end - start)
