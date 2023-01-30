@@ -50,6 +50,6 @@ def get_all_courses() -> list[Course]:
     return [get_course(course) for course in main_page]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for i in get_all_courses():
         print(i)
