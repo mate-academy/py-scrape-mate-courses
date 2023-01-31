@@ -21,20 +21,15 @@ class Course:
     course_type: CourseType
 
 
-def parce_single_course(course_soup: Tag) -> Course:
-    course = Course(
-        name=course_soup.select_one(
-            ".typography_landingH3__vTjok"
-        ).text,
+def parse_single_course(course_soup: Tag) -> Course:
+    name = course_soup.select_one(".typography_landingH3__vTjok").text
+    return Course(
+        name=name,
         short_description=course_soup.select_one(
             ".typography_landingP1__N9PXd"
         ).text,
-        course_type=CourseType.FULL_TIME
+        course_type=CourseType.PART_TIME if name.split()[-1] == "Вечерний" else CourseType.FULL_TIME
     )
-    if course.name.endswith("Вечерний"):
-        course.course_type = CourseType.PART_TIME
-
-    return course
 
 
 def get_all_courses() -> list[Course]:
@@ -43,7 +38,7 @@ def get_all_courses() -> list[Course]:
 
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
 
-    return [parce_single_course(course) for course in courses]
+    return [parse_single_course(course) for course in courses]
 
 
 def main() -> None:
