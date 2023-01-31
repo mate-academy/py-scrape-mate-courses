@@ -19,9 +19,6 @@ class Course:
     name: str
     short_description: str
     course_type: CourseType
-    # count_of_modules: str
-    # count_of_topics: str
-    # duration: int | None
 
 
 def get_page(url: str, selector: str) -> ResultSet[Tag]:
