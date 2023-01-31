@@ -22,7 +22,9 @@ class Course:
 
 
 def parse_single_course(course_soup: Tag) -> Course:
-    name = course_soup.select_one(".typography_landingH3__vTjok").text
+    name = course_soup.select_one(
+        ".typography_landingH3__vTjok"
+    ).text
     return Course(
         name=name,
         short_description=course_soup.select_one(
