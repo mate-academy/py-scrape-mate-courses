@@ -30,7 +30,8 @@ def parse_single_course(course_soup: Tag) -> Course:
         short_description=course_soup.select_one(
             ".typography_landingP1__N9PXd"
         ).text,
-        course_type=CourseType.PART_TIME if name.split()[-1] == "Вечерний" else CourseType.FULL_TIME
+        course_type=CourseType.PART_TIME if
+        name.split()[-1] == "Вечерний" else CourseType.FULL_TIME
     )
 
 
