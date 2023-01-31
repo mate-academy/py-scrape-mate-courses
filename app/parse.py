@@ -23,12 +23,14 @@ class Course:
 
 def parce_single_course(course_soup: Tag) -> Course:
     course = Course(
-            name=course_soup.select_one(".typography_landingH3__vTjok").text,
-            short_description=course_soup.select_one(
-                ".typography_landingP1__N9PXd"
-            ).text,
-            course_type=CourseType.FULL_TIME
-        )
+        name=course_soup.select_one(
+            ".typography_landingH3__vTjok"
+        ).text,
+        short_description=course_soup.select_one(
+            ".typography_landingP1__N9PXd"
+        ).text,
+        course_type=CourseType.FULL_TIME
+    )
     if course.name.endswith("Вечерний"):
         course.course_type = CourseType.PART_TIME
 
