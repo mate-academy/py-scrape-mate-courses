@@ -41,7 +41,7 @@ def get_all_courses() -> list[Course]:
 
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
 
-    return [parce_single_products(course) for course in courses]
+    return [parce_single_course(course) for course in courses]
 
 
 def main() -> None:
