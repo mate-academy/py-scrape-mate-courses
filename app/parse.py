@@ -21,22 +21,18 @@ class Course:
     course_type: CourseType
 
 
-def parce_single_products(course_soup: Tag) -> Course:
-    if "full-time" in course_soup.parent.parent.attrs.values():
-        return Course(
+def parce_single_course(course_soup: Tag) -> Course:
+    course = Course(
             name=course_soup.select_one(".typography_landingH3__vTjok").text,
             short_description=course_soup.select_one(
                 ".typography_landingP1__N9PXd"
             ).text,
             course_type=CourseType.FULL_TIME
         )
-    return Course(
-        name=course_soup.select_one(".typography_landingH3__vTjok").text,
-        short_description=course_soup.select_one(
-            ".typography_landingP1__N9PXd"
-        ).text,
-        course_type=CourseType.PART_TIME
-    )
+    if course.name.endswith("Вечерний"):
+        course.course_type = CourseType.PART_TIME
+
+    return course
 
 
 def get_all_courses() -> list[Course]:
