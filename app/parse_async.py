@@ -8,9 +8,6 @@ from bs4 import BeautifulSoup
 from httpx import AsyncClient
 
 
-BASE_URL = "https://mate.academy/"
-
-
 class CourseType(Enum):
     FULL_TIME = "full-time"
     PART_TIME = "part-time"
@@ -26,73 +23,77 @@ class Course:
     count_duration: str
 
 
-async def parse_single_course(
-        course_soup: BeautifulSoup,
-        course_detail_soup: BeautifulSoup
-) -> Course:
-    return Course(
-        name=course_soup.select_one(
-            ".typography_landingH3__vTjok"
-        ).text.split()[1],
-        short_description=course_soup.select_one(
-            ".typography_landingP1__N9PXd"
-        ).text,
-        course_type=CourseType.PART_TIME if course_soup.select_one(
-            ".typography_landingH3__vTjok"
-        ).text.split()[-1] == "Вечірній" else CourseType.FULL_TIME,
-        count_modules=int(course_detail_soup.select_one(
-            ".CourseModulesHeading_modulesNumber__GNdFP > "
-            ".typography_landingP2__KdC5Q"
-        ).text.split()[0]),
-        count_topics=int(course_detail_soup.select_one(
-            ".CourseModulesHeading_topicsNumber__PXMnR > "
-            ".typography_landingP2__KdC5Q"
-        ).text.split()[0]),
-        count_duration="Not indicated" if len(course_detail_soup) == 2 else
-        course_detail_soup.select_one(
-            ".CourseModulesHeading_courseDuration__f_c3H > "
-            ".typography_landingP2__KdC5Q"
-        ).text.split()[0],
-    )
+class MateParser:
+    def __init__(self, base_url: str):
+        self.base_url = base_url
 
+    @staticmethod
+    async def _parse_single_course(
+            course_soup: BeautifulSoup,
+            course_detail_soup: BeautifulSoup
+    ) -> Course:
+        return Course(
+            name=course_soup.select_one(
+                ".typography_landingH3__vTjok"
+            ).text.split()[1],
+            short_description=course_soup.select_one(
+                ".typography_landingP1__N9PXd"
+            ).text,
+            course_type=CourseType.PART_TIME if course_soup.select_one(
+                ".typography_landingH3__vTjok"
+            ).text.split()[-1] == "Вечірній" else CourseType.FULL_TIME,
+            count_modules=int(course_detail_soup.select_one(
+                ".CourseModulesHeading_modulesNumber__GNdFP > "
+                ".typography_landingP2__KdC5Q"
+            ).text.split()[0]),
+            count_topics=int(course_detail_soup.select_one(
+                ".CourseModulesHeading_topicsNumber__PXMnR > "
+                ".typography_landingP2__KdC5Q"
+            ).text.split()[0]),
+            count_duration="Not indicated" if len(course_detail_soup) == 2 else
+            course_detail_soup.select_one(
+                ".CourseModulesHeading_courseDuration__f_c3H > "
+                ".typography_landingP2__KdC5Q"
+            ).text.split()[0],
+        )
 
-async def get_courses_detail(
-        course_soup: BeautifulSoup,
-        client: AsyncClient
-) -> list[BeautifulSoup]:
-    link_course = urljoin(BASE_URL, course_soup.select_one("a")["href"])
-    page = await client.get(link_course)
-    page_soup = BeautifulSoup(page.content, "html.parser")
-    return page_soup.select(".CourseModulesHeading_headingGrid__50qAP")
+    async def _get_courses_detail(
+            self,
+            course_soup: BeautifulSoup,
+            client: AsyncClient
+    ) -> list[BeautifulSoup]:
+        link_course = urljoin(self.base_url, course_soup.select_one("a")["href"])
+        page = await client.get(link_course)
+        page_soup = BeautifulSoup(page.content, "html.parser")
+        return page_soup.select(".CourseModulesHeading_headingGrid__50qAP")
 
+    async def _get_courses(self,client: AsyncClient) -> list[BeautifulSoup]:
+        page = await client.get(self.base_url)
+        page_soup = BeautifulSoup(page.content, "html.parser")
+        return page_soup.select(".CourseCard_cardContainer__7_4lK")
 
-async def get_courses(client: AsyncClient) -> list[BeautifulSoup]:
-    page = await client.get(BASE_URL)
-    page_soup = BeautifulSoup(page.content, "html.parser")
-    return page_soup.select(".CourseCard_cardContainer__7_4lK")
+    async def get_all_courses(self) -> list[Course]:
+        async with AsyncClient() as client:
+            courses = await self._get_courses(client)
 
+            list_courses = []
 
-async def get_all_courses() -> list[Course]:
-    async with AsyncClient() as client:
-        courses = await get_courses(client)
-
-        list_courses = []
-
-        for course_soup in courses:
-            courses_detail_soup = await get_courses_detail(course_soup, client)
-            for course_detail in courses_detail_soup:
-                result = await asyncio.gather(
-                    parse_single_course(course_soup, course_detail)
-                )
-                list_courses.extend(result)
-        return list_courses
+            for course_soup in courses:
+                courses_detail_soup = await self._get_courses_detail(course_soup, client)
+                for course_detail in courses_detail_soup:
+                    result = await asyncio.gather(
+                        self._parse_single_course(course_soup, course_detail)
+                    )
+                    list_courses.extend(result)
+            return list_courses
 
 
 if __name__ == "__main__":
     start = time.perf_counter()
 
-    courses = asyncio.run(get_all_courses())
-    for course in courses:
+    courses = MateParser("https://mate.academy/")
+    courses_list = asyncio.run(courses.get_all_courses())
+    for course in courses_list:
         print(course)
 
     print(f"Elapsed: {time.perf_counter() - start}")
