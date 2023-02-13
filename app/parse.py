@@ -55,7 +55,7 @@ class MateParser:
             ).text.split()[0],
         )
 
-    def _get_courses_detail(
+    def _get_course_detail(
             self,
             course_soup: BeautifulSoup
     ) -> list[BeautifulSoup]:
