@@ -1,10 +1,11 @@
+import asyncio
 import time
-import requests
 
 from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
+from httpx import AsyncClient
 
 
 class CourseType(Enum):
@@ -26,7 +27,7 @@ class MateParser:
     base_url = "https://mate.academy/"
 
     @staticmethod
-    def _parse_single_course(
+    async def _parse_single_course(
             course_soup: BeautifulSoup,
             course_detail_soup: BeautifulSoup
     ) -> Course:
@@ -55,41 +56,49 @@ class MateParser:
             ).text.split()[0],
         )
 
-    def _get_course_detail(
+    async def _get_courses_detail(
             self,
-            course_soup: BeautifulSoup
+            course_soup: BeautifulSoup,
+            client: AsyncClient
     ) -> list[BeautifulSoup]:
         link_course = urljoin(
             self.base_url,
             course_soup.select_one("a")["href"]
         )
-        page = requests.get(link_course).content
-        page_soup = BeautifulSoup(page, "html.parser")
+        page = await client.get(link_course)
+        page_soup = BeautifulSoup(page.content, "html.parser")
         return page_soup.select(".CourseModulesHeading_headingGrid__50qAP")
 
-    def _get_courses(self) -> list[BeautifulSoup]:
-        page = requests.get(self.base_url).content
-        page_soup = BeautifulSoup(page, "html.parser")
+    async def _get_courses(self, client: AsyncClient) -> list[BeautifulSoup]:
+        page = await client.get(self.base_url)
+        page_soup = BeautifulSoup(page.content, "html.parser")
         return page_soup.select(".CourseCard_cardContainer__7_4lK")
 
-    def get_all_courses(self) -> list[Course]:
-        courses = self._get_courses()
+    async def get_all_courses(self) -> list[Course]:
+        async with AsyncClient() as client:
+            courses = await self._get_courses(client)
 
-        list_courses = []
-        for course_soup in courses:
-            courses_detail_soup = self._get_courses_detail(course_soup)
-            for course_detail in courses_detail_soup:
-                list_courses.append(
-                    self._parse_single_course(course_soup, course_detail)
+            list_courses = []
+
+            for course_soup in courses:
+                courses_detail_soup = await self._get_courses_detail(
+                    course_soup,
+                    client
                 )
-        return list_courses
+                for course_detail in courses_detail_soup:
+                    result = await asyncio.gather(
+                        self._parse_single_course(course_soup, course_detail)
+                    )
+                    list_courses.extend(result)
+            return list_courses
 
 
 if __name__ == "__main__":
     start = time.perf_counter()
 
     courses = MateParser()
-    for course in courses.get_all_courses():
+    courses_list = asyncio.run(courses.get_all_courses())
+    for course in courses_list:
         print(course)
 
     print(f"Elapsed: {time.perf_counter() - start}")
