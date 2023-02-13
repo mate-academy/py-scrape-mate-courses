@@ -24,8 +24,7 @@ class Course:
 
 
 class MateParser:
-    def __init__(self, base_url: str):
-        self.base_url = base_url
+    base_url = "https://mate.academy/"
 
     @staticmethod
     async def _parse_single_course(
@@ -62,12 +61,15 @@ class MateParser:
             course_soup: BeautifulSoup,
             client: AsyncClient
     ) -> list[BeautifulSoup]:
-        link_course = urljoin(self.base_url, course_soup.select_one("a")["href"])
+        link_course = urljoin(
+            self.base_url,
+            course_soup.select_one("a")["href"]
+        )
         page = await client.get(link_course)
         page_soup = BeautifulSoup(page.content, "html.parser")
         return page_soup.select(".CourseModulesHeading_headingGrid__50qAP")
 
-    async def _get_courses(self,client: AsyncClient) -> list[BeautifulSoup]:
+    async def _get_courses(self, client: AsyncClient) -> list[BeautifulSoup]:
         page = await client.get(self.base_url)
         page_soup = BeautifulSoup(page.content, "html.parser")
         return page_soup.select(".CourseCard_cardContainer__7_4lK")
@@ -79,7 +81,10 @@ class MateParser:
             list_courses = []
 
             for course_soup in courses:
-                courses_detail_soup = await self._get_courses_detail(course_soup, client)
+                courses_detail_soup = await self._get_courses_detail(
+                    course_soup,
+                    client
+                )
                 for course_detail in courses_detail_soup:
                     result = await asyncio.gather(
                         self._parse_single_course(course_soup, course_detail)
@@ -91,7 +96,7 @@ class MateParser:
 if __name__ == "__main__":
     start = time.perf_counter()
 
-    courses = MateParser("https://mate.academy/")
+    courses = MateParser()
     courses_list = asyncio.run(courses.get_all_courses())
     for course in courses_list:
         print(course)

@@ -23,8 +23,7 @@ class Course:
 
 
 class MateParser:
-    def __init__(self, base_url: str):
-        self.base_url = base_url
+    base_url = "https://mate.academy/"
 
     @staticmethod
     def _parse_single_course(
@@ -56,8 +55,14 @@ class MateParser:
             ).text.split()[0],
         )
 
-    def _get_courses_detail(self, course_soup: BeautifulSoup) -> list[BeautifulSoup]:
-        link_course = urljoin(self.base_url, course_soup.select_one("a")["href"])
+    def _get_courses_detail(
+            self,
+            course_soup: BeautifulSoup
+    ) -> list[BeautifulSoup]:
+        link_course = urljoin(
+            self.base_url,
+            course_soup.select_one("a")["href"]
+        )
         page = requests.get(link_course).content
         page_soup = BeautifulSoup(page, "html.parser")
         return page_soup.select(".CourseModulesHeading_headingGrid__50qAP")
@@ -83,7 +88,7 @@ class MateParser:
 if __name__ == "__main__":
     start = time.perf_counter()
 
-    courses = MateParser("https://mate.academy/")
+    courses = MateParser()
     for course in courses.get_all_courses():
         print(course)
 
