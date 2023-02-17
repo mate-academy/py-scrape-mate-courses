@@ -55,15 +55,7 @@ def get_all_courses() -> list[Course]:
     for block in part_blocks:
         course_cards = block.select("section.CourseCard_cardContainer__7_4lK")
         all_courses.extend([
-            get_single_course(course_card, block["id"]) for course_card in course_cards
+            get_single_course(
+                course_card, block["id"]) for course_card in course_cards
         ])
     return all_courses
-
-
-def main():
-    for course in get_all_courses():
-        print(course)
-
-
-if __name__ == "__main__":
-    main()
