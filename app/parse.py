@@ -5,8 +5,6 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup, Tag
 
-BASE_URL = "https://mate.academy/"
-
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
@@ -23,8 +21,8 @@ class Course:
     duration_months: str
 
 
-def get_single_course(course_card: Tag, crs: str) -> Course:
-    url_course = urljoin(BASE_URL, course_card.select_one("a")["href"])
+def get_single_course(course_card: Tag, crs: str, base_url: str) -> Course:
+    url_course = urljoin(base_url, course_card.select_one("a")["href"])
     url_course_detail = urljoin(url_course, "#course-program")
     resp = requests.get(url_course_detail).content
     soup = BeautifulSoup(resp, "html.parser")
@@ -48,7 +46,8 @@ def get_single_course(course_card: Tag, crs: str) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    resp = requests.get(BASE_URL).content
+    base_url = "https://mate.academy/"
+    resp = requests.get(base_url).content
     soup = BeautifulSoup(resp, "html.parser")
     part_blocks = soup.select("#full-time,#part-time")
     all_courses = list()
@@ -56,6 +55,8 @@ def get_all_courses() -> list[Course]:
         course_cards = block.select("section.CourseCard_cardContainer__7_4lK")
         all_courses.extend([
             get_single_course(
-                course_card, block["id"]) for course_card in course_cards
+                course_card,
+                block["id"],
+                base_url) for course_card in course_cards
         ])
     return all_courses
