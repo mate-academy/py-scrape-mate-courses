@@ -3,8 +3,6 @@ from enum import Enum
 import requests
 from bs4 import BeautifulSoup
 
-BASE_URL = "https://mate.academy/"
-
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
@@ -33,7 +31,8 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    page = requests.get(BASE_URL).content
+    base_html = "https://mate.academy/"
+    page = requests.get(base_html).content
     soup = BeautifulSoup(page, "html.parser")
 
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
