@@ -21,7 +21,9 @@ class Course:
     duration: str
 
 
-def get_parse_detail_course_page(course_soup: Tag, base_url: str) -> ResultSet[Tag]:
+def get_parse_detail_course_page(
+        course_soup: Tag,
+        base_url: str) -> ResultSet[Tag]:
     detail_url = urljoin(base_url, course_soup.select_one("a.mb-16")["href"])
     page = requests.get(detail_url).content
     soup = BeautifulSoup(page, "html.parser")
