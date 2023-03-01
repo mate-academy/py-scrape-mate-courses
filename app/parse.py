@@ -5,8 +5,6 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup, ResultSet, Tag
 
-BASE_URL = "https://mate.academy/"
-
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
@@ -23,15 +21,15 @@ class Course:
     duration: str
 
 
-def get_parse_detail_course_page(course_soup: Tag) -> ResultSet[Tag]:
-    detail_url = urljoin(BASE_URL, course_soup.select_one("a.mb-16")["href"])
+def get_parse_detail_course_page(course_soup: Tag, base_url: str) -> ResultSet[Tag]:
+    detail_url = urljoin(base_url, course_soup.select_one("a.mb-16")["href"])
     page = requests.get(detail_url).content
     soup = BeautifulSoup(page, "html.parser")
     return soup.select(".CourseModulesHeading_headingGrid__50qAP")
 
 
-def parse_single_course(course_soup: Tag) -> Course:
-    programma_soup = get_parse_detail_course_page(course_soup)
+def parse_single_course(course_soup: Tag, base_url: str) -> Course:
+    programma_soup = get_parse_detail_course_page(course_soup, base_url)
     modules = 0
     topics = 0
     duration = ""
@@ -69,14 +67,15 @@ def parse_single_course(course_soup: Tag) -> Course:
 
 
 def get_all_courses() -> [Course]:
-    page = requests.get(BASE_URL).content
+    base_url = "https://mate.academy/"
+    page = requests.get(base_url).content
     soup = BeautifulSoup(page, "html.parser")
     courses = soup.select("section.CourseCard_cardContainer__7_4lK")
-    return [parse_single_course(course) for course in courses]
+    return [parse_single_course(course, base_url) for course in courses]
 
 
 def main() -> None:
-    print(get_all_courses())
+    get_all_courses()
 
 
 if __name__ == "__main__":
