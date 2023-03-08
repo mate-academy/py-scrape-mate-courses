@@ -55,7 +55,7 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
             ).text
         )
         if course_type == CourseType.FULL_TIME
-        else "Навчайся у власному графіку"
+        else "Навчайся за власним графіком"
     )
 
     return Course(
