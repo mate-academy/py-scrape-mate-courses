@@ -34,7 +34,9 @@ def extract_course_details(course_soup: BeautifulSoup) -> tuple[str, str]:
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
 
     name, short_description = extract_course_details(course_soup)
-    link = "https://mate.academy/" + course_soup.select_one(".Button_large__rIMVg")["href"]
+    link = "https://mate.academy/" + course_soup.select_one(
+        ".Button_large__rIMVg"
+    )["href"]
     course_page = requests.get(link).content
     course_soup = BeautifulSoup(course_page, "html.parser")
 
