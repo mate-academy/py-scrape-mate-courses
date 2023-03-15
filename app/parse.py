@@ -5,8 +5,6 @@ from enum import Enum
 import requests
 from bs4 import BeautifulSoup
 
-BASE_URL = "https://mate.academy/"
-
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
@@ -36,7 +34,7 @@ def extract_course_details(course_soup: BeautifulSoup) -> tuple[str, str]:
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
 
     name, short_description = extract_course_details(course_soup)
-    link = BASE_URL + course_soup.select_one(".Button_large__rIMVg")["href"]
+    link = "https://mate.academy/" + course_soup.select_one(".Button_large__rIMVg")["href"]
     course_page = requests.get(link).content
     course_soup = BeautifulSoup(course_page, "html.parser")
 
@@ -70,7 +68,7 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    page = requests.get(BASE_URL).content
+    page = requests.get("https://mate.academy/").content
     soup = BeautifulSoup(page, "html.parser")
 
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
