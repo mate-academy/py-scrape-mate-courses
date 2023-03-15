@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,9 +17,9 @@ class Course:
     name: str
     short_description: str
     course_type: CourseType
-    num_modules: int = None
-    num_topics: int = None
-    num_duration: int = None
+    num_modules: Optional[int] = None
+    num_topics: Optional[int] = None
+    num_duration: Optional[int] = None
 
 
 def extract_course_details(course_soup: BeautifulSoup) -> tuple[str, str]:
