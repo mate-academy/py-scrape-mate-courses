@@ -19,23 +19,13 @@ class Course:
     course_type: CourseType
 
 
-def parse_full_time_course(course_soup: Tag) -> Course:
+def parse_course(course_soup: Tag, course_type: CourseType) -> Course:
     return Course(
         name=course_soup.select_one(".typography_landingH3__vTjok").text,
         short_description=course_soup.select_one(
             ".typography_landingP1__N9PXd"
         ).text,
-        course_type=CourseType.FULL_TIME
-    )
-
-
-def parse_part_time_course(course_soup: Tag) -> Course:
-    return Course(
-        name=course_soup.select_one(".typography_landingH3__vTjok").text,
-        short_description=course_soup.select_one(
-            ".typography_landingP1__N9PXd"
-        ).text,
-        course_type=CourseType.PART_TIME
+        course_type=course_type
     )
 
 
@@ -46,7 +36,7 @@ def get_full_time_courses() -> list[Course]:
         "#full-time .CourseCard_cardContainer__7_4lK"
     )
     return [
-        parse_full_time_course(course_soup)
+        parse_course(course_soup, CourseType.FULL_TIME)
         for course_soup in full_time_courses
     ]
 
@@ -58,10 +48,13 @@ def get_part_time_courses() -> list[Course]:
         "#part-time .CourseCard_cardContainer__7_4lK"
     )
     return [
-        parse_part_time_course(course_soup)
+        parse_course(course_soup, CourseType.PART_TIME)
         for course_soup in part_time_courses
     ]
 
 
 def get_all_courses() -> list[Course]:
-    return [get_full_time_courses(), get_part_time_courses()]
+    all_courses = []
+    all_courses.extend(get_full_time_courses())
+    all_courses.extend(get_part_time_courses())
+    return all_courses
