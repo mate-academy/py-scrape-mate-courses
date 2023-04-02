@@ -3,6 +3,7 @@ from enum import Enum
 import requests
 from bs4 import BeautifulSoup, Tag
 
+
 HOME_URL = "https://mate.academy/en/"
 
 
