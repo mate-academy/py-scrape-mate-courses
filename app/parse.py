@@ -36,7 +36,7 @@ def get_full_time_courses() -> list[Course]:
         "#full-time .CourseCard_cardContainer__7_4lK"
     )
     return [
-        parse_course(course_soup, CourseType.FULL_TIME)
+        parse_course(course_soup, "full_time")
         for course_soup in full_time_courses
     ]
 
@@ -48,10 +48,14 @@ def get_part_time_courses() -> list[Course]:
         "#part-time .CourseCard_cardContainer__7_4lK"
     )
     return [
-        parse_course(course_soup, CourseType.PART_TIME)
+        parse_course(course_soup, "part_time")
         for course_soup in part_time_courses
     ]
 
 
 def get_all_courses() -> list[Course]:
     return [get_full_time_courses(), get_part_time_courses()]
+
+
+if __name__ == '__main__':
+    print(get_all_courses())
