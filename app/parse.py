@@ -53,5 +53,8 @@ def get_part_time_courses() -> list[Course]:
     ]
 
 
-def get_all_courses() -> tuple[list[Course], list[Course]]:
-    return get_full_time_courses(), get_part_time_courses()
+def get_all_courses() -> list[Course]:
+    courses = []
+    courses.extend(get_full_time_courses())
+    courses.extend(get_part_time_courses())
+    return courses
