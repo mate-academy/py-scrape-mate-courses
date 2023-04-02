@@ -28,6 +28,7 @@ def parse_full_time_course(course_soup: Tag) -> Course:
         course_type=CourseType.FULL_TIME
     )
 
+
 def parse_part_time_course(course_soup: Tag) -> Course:
     return Course(
         name=course_soup.select_one(".typography_landingH3__vTjok").text,
