@@ -51,6 +51,5 @@ def get_part_time_courses() -> list[Course]:
         for course_soup in part_time_courses
     ]
 
-
 def get_all_courses() -> tuple[list[Course], list[Course]]:
     return get_full_time_courses(), get_part_time_courses()
