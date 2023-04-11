@@ -4,7 +4,7 @@ from enum import Enum
 import requests
 from bs4 import BeautifulSoup
 
-URL_MA = "https://mate.academy/en"
+MATE_ACADEMY_HOME_URL = "https://mate.academy/en"
 
 
 class CourseType(Enum):
@@ -37,7 +37,7 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    page = requests.get(URL_MA).content
+    page = requests.get(MATE_ACADEMY_HOME_URL).content
     soup = BeautifulSoup(page, "html.parser")
 
     all_courses = soup.select(".CourseCard_cardContainer__7_4lK")
