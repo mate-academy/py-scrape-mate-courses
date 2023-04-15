@@ -37,11 +37,11 @@ def parse_additional_info(link: str) -> tuple:
     duration_field = soup.select_one(
         ".CourseModulesHeading_courseDuration__f_c3H > p"
     )
-
-    if duration_field is not None:
-        duration = duration_field.text.replace("місяці", "months")
-    else:
-        duration = None
+    duration = (
+        duration_field.text.replace("місяців", "months")
+        if duration_field is not None
+        else None
+    )
 
     return num_modules, num_topics, duration
 
