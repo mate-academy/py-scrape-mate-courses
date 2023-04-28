@@ -3,6 +3,7 @@ from enum import Enum
 
 import requests
 from bs4 import BeautifulSoup, Tag
+from selenium import webdriver
 
 URL = "https://mate.academy/"
 
@@ -64,7 +65,10 @@ def parse_one_course(course_soup: Tag, course_type: CourseType) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    page = requests.get(URL).content
+    with webdriver.Chrome() as driver:
+        driver.get(URL)
+        page = driver.page_source
+
     soup = BeautifulSoup(page, "html.parser")
 
     full_time_courses = soup.select("div#full-time section")
