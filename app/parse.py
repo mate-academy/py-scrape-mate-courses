@@ -1,7 +1,6 @@
 import logging
 import sys
 
-import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -53,11 +52,13 @@ def parse_single_course(
 def get_all_courses() -> list[Course]:
     chrome_options = Options()
     chrome_options.add_argument("--headless")
-    chrome_options.add_argument('--no-sandbox')
-    driver = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver', options=chrome_options)
+    chrome_options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome(
+        "/usr/lib/chromium-browser/chromedriver",
+        options=chrome_options
+    )
     driver.get(BASE_URL)
     page = driver.page_source
-    # page = requests.get(BASE_URL, timeout=1).text
     soup = BeautifulSoup(page, "html.parser")
     courses_list = []
 
