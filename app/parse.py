@@ -1,11 +1,25 @@
+import logging
+import sys
+
+import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 from dataclasses import dataclass
 from enum import Enum
 
 
-URL = "https://mate.academy/"
+BASE_URL = "https://mate.academy/"
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(levelname)s]: %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 
 class CourseType(Enum):
@@ -24,7 +38,7 @@ def parse_single_course(
         course_soup: BeautifulSoup,
         course_type: CourseType
 ) -> Course:
-    return Course(
+    course = Course(
         name=course_soup.select_one("a", {"class": "mb-16"}).text,
         short_description=(
             course_soup.select_one(
@@ -32,12 +46,18 @@ def parse_single_course(
         ),
         course_type=course_type
     )
+    logging.info(f"Course '{course.name}' was parsed")
+    return course
 
 
 def get_all_courses() -> list[Course]:
-    driver = webdriver.Chrome()
-    driver.get(URL)
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument('--no-sandbox')
+    driver = webdriver.Chrome('/usr/lib/chromium-browser/chromedriver', options=chrome_options)
+    driver.get(BASE_URL)
     page = driver.page_source
+    # page = requests.get(BASE_URL, timeout=1).text
     soup = BeautifulSoup(page, "html.parser")
     courses_list = []
 
@@ -54,7 +74,7 @@ def get_all_courses() -> list[Course]:
 
 
 def main() -> None:
-    get_all_courses()
+    print(get_all_courses())
 
 
 if __name__ == "__main__":
