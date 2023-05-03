@@ -46,6 +46,7 @@ def parse_single_course(
         course_type=course_type
     )
     logging.info(f"Course '{course.name}' was parsed")
+
     return course
 
 
@@ -74,9 +75,5 @@ def get_all_courses() -> list[Course]:
     return courses_list
 
 
-def main() -> None:
-    print(get_all_courses())
-
-
 if __name__ == "__main__":
-    main()
+    get_all_courses()
