@@ -43,7 +43,7 @@ def initialize_chrome() -> Chrome:
 
 
 def get_course_detail_info(course_url: str) -> dict:
-    course_detail_url = urljoin(URL, course_url)+"#course-program"
+    course_detail_url = urljoin(URL, course_url) + "#course-program"
     page = requests.get(course_detail_url)
     soup = BeautifulSoup(page.content, "html.parser")
     course_duration = soup.select_one(
@@ -62,7 +62,9 @@ def get_course_detail_info(course_url: str) -> dict:
 
 
 def parse_single_course(course_soup: Tag, course_type: CourseType) -> Course:
-    additional_info = get_course_detail_info(course_soup.select_one("a")["href"])
+    additional_info = get_course_detail_info(
+        course_soup.select_one("a")["href"]
+    )
     return Course(
         name=course_soup.select_one(".typography_landingH3__vTjok").text,
         short_description=course_soup.select_one(
