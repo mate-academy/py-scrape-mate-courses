@@ -17,4 +17,3 @@ Hints:
 ### Optional task:
 
 Also get info about count of `modules`, count of `topics` and `duration` for each course.
-
