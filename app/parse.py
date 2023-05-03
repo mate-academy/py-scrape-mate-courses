@@ -53,7 +53,7 @@ def get_all_courses() -> list[Course]:
     return courses_list
 
 
-def main():
+def main() -> None:
     get_all_courses()
 
 
