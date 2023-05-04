@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urljoin
 
 import requests as requests
@@ -81,7 +82,7 @@ def parse_course(course: Tag) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
     driver.get(BASE_URL)
     source = BeautifulSoup(driver.page_source, "html.parser")
     courses = source.select(".CourseCard_cardContainer__7_4lK")
