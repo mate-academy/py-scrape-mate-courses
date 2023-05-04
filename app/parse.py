@@ -2,6 +2,10 @@ from dataclasses import dataclass
 from enum import Enum
 from bs4 import BeautifulSoup
 from pprint import pprint
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
 
 import requests
 
@@ -40,13 +44,22 @@ def parse_simple_cource(course_soup: BeautifulSoup) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    page = requests.get(PARSE_URL).content
-    soup = BeautifulSoup(page, "html.parser")
-    course_soup = soup.select(".CourseCard_cardContainer__7_4lK")
-    print(course_soup)
+    service = Service("/usr/local/bin/chromedriver")
+    options = Options()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(service=service, options=options)
+
+    driver.get(PARSE_URL)
+    
+    WebDriverWait(driver, 10)
+    
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    course_soup = soup.find_all(class_="CourseCard_cardContainer__7_4lK")
 
     res = [parse_simple_cource(course) for course in course_soup]
-    pprint(res)
+    driver.quit()
     return res
 
-# TODO: I DON'T understund how ti do this task without selenium, hardcode-json_load and without any links in networks.
+
+if __name__ == "__main__":
+    pprint(get_all_courses())
