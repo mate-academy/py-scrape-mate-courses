@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from urllib.parse import urljoin
 
 import requests as requests
@@ -81,6 +83,9 @@ def parse_course(course: Tag) -> Course:
 
 
 def get_all_courses() -> list[Course]:
+    service = Service("/usr/local/bin/chromedriver")
+    options = Options()
+    options.add_argument("--headless")
     driver = webdriver.Chrome()
     driver.get(BASE_URL)
     source = BeautifulSoup(driver.page_source, "html.parser")
@@ -88,7 +93,3 @@ def get_all_courses() -> list[Course]:
     driver.quit()
 
     return [parse_course(course) for course in courses]
-
-
-if __name__ == "__main__":
-    get_all_courses()
