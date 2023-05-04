@@ -34,8 +34,8 @@ def pars_single_course(course: BeautifulSoup) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    s = Service('/usr/bin/chromedriver')
-    driver = webdriver.Chrome(service=s)
+    service = Service("/usr/bin/chromedriver")
+    driver = webdriver.Chrome(service=service)
     driver.get(BASE_URL)
     time.sleep(1)
     page = driver.page_source
