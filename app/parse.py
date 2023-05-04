@@ -51,5 +51,3 @@ def get_all_courses() -> list[Course]:
         result += courses_list_time
         print(result)
     return result
-
-get_all_courses()
