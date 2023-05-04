@@ -1,3 +1,4 @@
+import requests
 from selenium import webdriver
 from dataclasses import dataclass
 from enum import Enum
@@ -18,6 +19,18 @@ class Course:
     name: str
     short_description: str
     course_type: CourseType
+    modules: int
+    topics: int
+    duration: str
+
+
+def get_detail_course_page(course_soup: BeautifulSoup):
+    href = course_soup.select_one(".mb-16")["href"]
+    html = requests.get(MAIN_PAGE_URL + href).content
+
+    soup = BeautifulSoup(html, "html.parser")
+
+    return soup
 
 
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
@@ -25,12 +38,28 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
     description = course_soup.select_one(
         ".CourseCard_courseDescription__Unsqj"
     ).text
+    detail_soup = get_detail_course_page(course_soup)
+    modules = detail_soup.select_one(
+        "div.CourseModulesHeading_modulesNumber__GNdFP >"
+        " p.CourseModulesHeading_text__EdrEk"
+    ).text.split()[0]
+    topics = detail_soup.select_one(
+        "div.CourseModulesHeading_topicsNumber__PXMnR >"
+        " p.CourseModulesHeading_text__EdrEk"
+    ).text.split()[0]
+    duration = detail_soup.select_one(
+        "div.CourseModulesHeading_courseDuration__f_c3H >"
+        " p.CourseModulesHeading_text__EdrEk"
+    )
     return Course(
         name=course_name,
         short_description=description,
         course_type=CourseType.FULL_TIME
         if "Вечірній" not in course_name
         else CourseType.PART_TIME,
+        modules=int(modules),
+        topics=int(topics),
+        duration=duration.text if duration else None,
     )
 
 
@@ -40,7 +69,7 @@ def get_html_chosen_page(url: str = MAIN_PAGE_URL) -> str:
     driver = webdriver.Chrome(options=options)
 
     driver.get(url)
-    driver.implicitly_wait(3)
+    driver.implicitly_wait(1)
     html = driver.page_source
 
     driver.quit()
