@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 
 
 URL = "https://mate.academy/"
@@ -30,7 +31,8 @@ def parse_course(course_soup: Tag, course_type: CourseType) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    driver = webdriver.Chrome()
+    s = Service('/usr/bin/chromedriver')
+    driver = webdriver.Chrome(service=s)
     driver.get(URL)
     soup = BeautifulSoup(driver.page_source, "html.parser")
     full_time_soup = soup.select(
