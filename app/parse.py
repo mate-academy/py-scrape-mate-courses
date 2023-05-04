@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 
+import requests
 
 PARSE_URL = "https://mate.academy/"
 
@@ -37,8 +38,8 @@ def parse_simple_cource(course_soup: BeautifulSoup) -> Course:
         short_description=course_soup.select_one(
             ".CourseCard_courseDescription__Unsqj"
         ).text,
-        course_type=CourseType.PART_TIME.value if study_format(
-            course_soup) else CourseType.FULL_TIME.value
+        course_type=CourseType.PART_TIME if study_format(
+            course_soup) else CourseType.FULL_TIME
     )
 
 
@@ -57,8 +58,5 @@ def get_all_courses() -> list[Course]:
 
     res = [parse_simple_cource(course) for course in course_soup]
     driver.quit()
+
     return res
-
-
-if __name__ == "__main__":
-    pprint(get_all_courses())
