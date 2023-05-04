@@ -76,4 +76,3 @@ def get_all_courses() -> List[Course]:
     driver.quit()
 
     return courses
-
