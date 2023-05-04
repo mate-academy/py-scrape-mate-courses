@@ -9,7 +9,6 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 URL = "https://mate.academy/"
-SERVICE = "chromedriver_mac64/chromedriver"
 
 
 driver: WebDriver | None = None
@@ -74,7 +73,7 @@ def parse_single_course(course: WebElement) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    with webdriver.Chrome(SERVICE) as new_drier:
+    with webdriver.Chrome() as new_drier:
         set_driver(new_drier)
         _driver.get(URL)
         time.sleep(5)
