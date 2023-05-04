@@ -7,7 +7,6 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 
-import requests
 
 PARSE_URL = "https://mate.academy/"
 
@@ -50,9 +49,9 @@ def get_all_courses() -> list[Course]:
     driver = webdriver.Chrome(service=service, options=options)
 
     driver.get(PARSE_URL)
-    
+
     WebDriverWait(driver, 10)
-    
+
     soup = BeautifulSoup(driver.page_source, "html.parser")
     course_soup = soup.find_all(class_="CourseCard_cardContainer__7_4lK")
 
