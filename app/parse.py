@@ -1,8 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
-from urllib.parse import urljoin
-from bs4 import BeautifulSoup, Tag, ResultSet
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
