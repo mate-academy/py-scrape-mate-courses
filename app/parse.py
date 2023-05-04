@@ -94,6 +94,3 @@ def get_all_courses() -> list[Course]:
     driver.quit()
 
     return [parse_course(course) for course in courses]
-
-
-get_all_courses()
