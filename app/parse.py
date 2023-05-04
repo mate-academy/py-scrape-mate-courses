@@ -51,6 +51,7 @@ def parse_details_course(link: str) -> tuple:
 
 def parse_course(course: Tag) -> Course:
     title = course.find("span", {"class": "typography_landingH3__vTjok"}).text
+    title = " ".join(title.split()[1:])
     description = course.select_one(
         ".CourseCard_courseDescription__Unsqj"
     ).text
@@ -93,3 +94,6 @@ def get_all_courses() -> list[Course]:
     driver.quit()
 
     return [parse_course(course) for course in courses]
+
+
+get_all_courses()
