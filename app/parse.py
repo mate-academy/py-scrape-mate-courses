@@ -86,7 +86,7 @@ def get_all_courses() -> list[Course]:
     service = Service("/usr/local/bin/chromedriver")
     options = Options()
     options.add_argument("--headless")
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(service=service, options=options)
     driver.get(BASE_URL)
     source = BeautifulSoup(driver.page_source, "html.parser")
     courses = source.select(".CourseCard_cardContainer__7_4lK")
