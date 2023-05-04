@@ -31,8 +31,8 @@ def parse_course(course_soup: Tag, course_type: CourseType) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    s = Service('/usr/bin/chromedriver')
-    driver = webdriver.Chrome(service=s)
+    serv = Service("/usr/bin/chromedriver")
+    driver = webdriver.Chrome(service=serv)
     driver.get(URL)
     soup = BeautifulSoup(driver.page_source, "html.parser")
     full_time_soup = soup.select(
