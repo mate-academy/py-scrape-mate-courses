@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
+from bs4 import BeautifulSoup
+from pprint import pprint
 
 import requests
-from bs4 import BeautifulSoup
 
-BASE_URL = "https://mate.academy/"
+PARSE_URL = "https://mate.academy/"
 
 
 class CourseType(Enum):
@@ -19,37 +20,33 @@ class Course:
     course_type: CourseType
 
 
-def parse_single_course(course_soup: BeautifulSoup, time: str) -> Course:
-    if time == CourseType.FULL_TIME:
-        return Course(
-            name=course_soup.select_one(".typography_landingH3__vTjok").text,
-            short_description=course_soup.select_one(
-                ".CourseCard_courseDescription__Unsqj"
-            ).text,
-            course_type=time,
-        )
+def study_format(course_soup: BeautifulSoup) -> bool:
+    value = course_soup.select_one(
+        ".typography_landingH3__vTjok"
+    ).text.split()[0]
+
+    return value == "Вечірній"
+
+
+def parse_simple_cource(course_soup: BeautifulSoup) -> Course:
     return Course(
-        name=course_soup.select_one(
-            ".typography_landingH3__vTjok"
-        ).text + " Вечірній",
+        name=course_soup.select_one(".typography_landingH3__vTjok").text,
         short_description=course_soup.select_one(
             ".CourseCard_courseDescription__Unsqj"
         ).text,
-        course_type=time,
+        course_type=CourseType.PART_TIME.value if study_format(
+            course_soup) else CourseType.FULL_TIME.value
     )
 
 
 def get_all_courses() -> list[Course]:
-    page = requests.get(BASE_URL).content
+    page = requests.get(PARSE_URL).content
     soup = BeautifulSoup(page, "html.parser")
-    courses = soup.select(".CourseCard_cardContainer__7_4lK")
-    times = [CourseType.FULL_TIME, CourseType.PART_TIME]
-    result = []
-    for time in times:
-        courses_list_time = [
-            parse_single_course(course_soup, time)
-            for course_soup in courses
-        ]
-        result += courses_list_time
-        print(result)
-    return result
+    course_soup = soup.select(".CourseCard_cardContainer__7_4lK")
+    print(course_soup)
+
+    res = [parse_simple_cource(course) for course in course_soup]
+    pprint(res)
+    return res
+
+# TODO: I DON'T understund how ti do this task without selenium, hardcode-json_load and without any links in networks.
