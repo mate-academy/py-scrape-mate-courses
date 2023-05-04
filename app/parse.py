@@ -1,13 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
 from bs4 import BeautifulSoup
-from pprint import pprint
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 
-import requests
 
 PARSE_URL = "https://mate.academy/"
 
