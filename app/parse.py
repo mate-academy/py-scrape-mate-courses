@@ -82,8 +82,8 @@ def get_all_courses() -> list[Course]:
     driver.get(URL)
     element = driver.find_element(By.ID, "part-time")
     driver.execute_script("arguments[0].scrollIntoView();", element)
-    time.sleep(3)
     soup = BeautifulSoup(driver.page_source, "html.parser")
+    driver.close()
     full_time_soup = soup.select(
         "[id=full-time] .CourseCard_cardContainer__7_4lK"
     )
