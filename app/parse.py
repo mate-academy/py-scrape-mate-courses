@@ -1,15 +1,11 @@
 from pprint import pprint
-import time
-import requests
 from dataclasses import dataclass
 from enum import Enum
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 BASE_URL = "https://mate.academy/"
 
@@ -34,12 +30,7 @@ def get_all_courses() -> list[Course]:
 
     driver.get(BASE_URL)
 
-    wait = WebDriverWait(driver, 10)
-    # wait.until(
-    #     EC.presence_of_element_located(
-    #         (By.CLASS_NAME, "CourseCard_cardContainer__7_4lK")
-    #     )
-    # )
+    WebDriverWait(driver, 10)
 
     soup = BeautifulSoup(driver.page_source, "html.parser")
     courses = []
