@@ -24,7 +24,7 @@ class Course:
     duration: str
 
 
-def get_detail_course_page(course_soup: BeautifulSoup):
+def get_detail_course_page(course_soup: BeautifulSoup) -> str:
     href = course_soup.select_one(".mb-16")["href"]
     html = requests.get(MAIN_PAGE_URL + href).content
 
