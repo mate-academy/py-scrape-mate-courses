@@ -23,7 +23,7 @@ class Course:
 def study_format(course_soup: BeautifulSoup) -> bool:
     value = course_soup.select_one(
         ".typography_landingH3__vTjok"
-    ).text.split()[0]
+    ).text.split()[-1]
 
     return value == "Вечірній"
 
