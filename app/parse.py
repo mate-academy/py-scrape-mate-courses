@@ -21,17 +21,33 @@ class Course:
     course_type: CourseType
 
 
-def parse_single_course(name: str, description: str, course_type: CourseType) -> Course:
-    return Course(name=name, short_description=description, course_type=course_type)
+def parse_single_course(
+        name: str,
+        description: str,
+        course_type: CourseType
+) -> Course:
+    return Course(
+        name=name,
+        short_description=description,
+        course_type=course_type
+    )
 
 
 def parse_full_time_courses(full_time_soup: ResultSet[Tag]) -> List[Course]:
-    names = [course.select_one(".mb-16 span").text for course in full_time_soup]
-    descriptions = [course.select_one(".CourseCard_flexContainer__dJk4p p").text for course in full_time_soup]
+    names = [course.select_one(
+        ".mb-16 span"
+    ).text for course in full_time_soup]
+    descriptions = [
+        course.select_one(
+            ".CourseCard_flexContainer__dJk4p p"
+        ).text for course in full_time_soup
+    ]
 
     courses = []
     for name, description in zip(names, descriptions):
-        course_type = CourseType.FULL_TIME if len(name.split()) < 3 else CourseType.PART_TIME
+        course_type = CourseType.FULL_TIME if len(
+            name.split()
+        ) < 3 else CourseType.PART_TIME
         course = parse_single_course(name.split()[1], description, course_type)
         courses.append(course)
 
