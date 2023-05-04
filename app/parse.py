@@ -22,7 +22,7 @@ driver.get(url)
 soup = BeautifulSoup(driver.page_source, "html.parser")
 
 
-def get_courses(course_type: Enum) -> list[Course]:
+def get_courses(course_type: CourseType) -> list[Course]:
     courses_list = []
     courses = soup.find("div", {"id": course_type.value})
     courses = courses.find_all(
@@ -52,9 +52,5 @@ def get_all_courses() -> list[Course]:
     all_courses.extend(get_courses(CourseType.PART_TIME))
     return all_courses
 
-
-courses = get_all_courses()
-for course in courses:
-    print(f"Title: {course.name}\nDescription: {course.short_description}\n")
 
 driver.quit()
