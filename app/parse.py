@@ -18,7 +18,9 @@ class Course:
     course_type: CourseType
 
     def __str__(self):
-        return f"name={self.name}; short_description={self.short_description}; course_type={self.course_type.value}"
+        return f"name={self.name};" \
+               f" short_description={self.short_description};" \
+               f" course_type={self.course_type.value}"
 
 
 def parse_single_product(course_soup: BeautifulSoup) -> Course:
@@ -33,9 +35,10 @@ def get_all_courses() -> List[Course]:
     page = requests.get("https://mate.academy").content
     soup = BeautifulSoup(page, "html.parser")
 
-    courses = soup.select(".cell.large-6.large-offset-1.mb-32")
+    courses = soup.select(".CourseCard_cardContainer__7_4lK")
+    parsed_courses = [parse_single_product(course_soup) for course_soup in courses]
 
-    return [parse_single_product(course_soup) for course_soup in courses]
+    return parsed_courses
 
 
 if __name__ == "__main__":
