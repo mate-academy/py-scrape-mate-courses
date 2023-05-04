@@ -43,7 +43,3 @@ def get_all_courses() -> list[Course]:
     driver.close()
 
     return [parse_one_course(course) for course in courses]
-
-
-for element in get_all_courses():
-    print(element)
