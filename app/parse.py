@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 
 HOME_URL = "https://mate.academy/"
 
@@ -20,7 +19,8 @@ class Course:
     course_type: CourseType
 
 
-def get_course_detail(raw_data):
+def get_course_detail(raw_data: Tag) -> Course:
+    print(type(raw_data))
     title = raw_data.select_one(".typography_landingH3__vTjok")
     if "Вечірній" in title.text:
         course_type = CourseType.PART_TIME
@@ -29,7 +29,9 @@ def get_course_detail(raw_data):
         course_type = CourseType.FULL_TIME
         name = title.text.split(" ", 1)[1]
     print(name)
-    short_description = raw_data.select_one(".CourseCard_courseDescription__Unsqj")
+    short_description = raw_data.select_one(
+        ".CourseCard_courseDescription__Unsqj"
+    )
 
     return Course(
         name=name, short_description=short_description, course_type=course_type
