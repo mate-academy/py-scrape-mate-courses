@@ -24,13 +24,13 @@ class Course:
     duration: str
 
 
-def get_detail_course_page(course_soup: BeautifulSoup) -> str:
+def get_detail_course_page(course_soup: BeautifulSoup) -> BeautifulSoup:
     href = course_soup.select_one(".mb-16")["href"]
     html = requests.get(MAIN_PAGE_URL + href).content
 
-    soup = BeautifulSoup(html, "html.parser")
+    course_detail_page_soup = BeautifulSoup(html, "html.parser")
 
-    return soup
+    return course_detail_page_soup
 
 
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
