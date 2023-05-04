@@ -1,4 +1,3 @@
-import json
 from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urljoin
@@ -61,7 +60,7 @@ def get_courses_by_type(course_type: CourseType) -> list[Course]:
     ]
 
 
-def get_all_courses():
+def get_all_courses() -> list[Course]:
     return [
         *get_courses_by_type(CourseType.FULL_TIME),
         *get_courses_by_type(CourseType.PART_TIME),
