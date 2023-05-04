@@ -29,7 +29,9 @@ def parse_single_course(course_soup: BeautifulSoup, time: str) -> Course:
             course_type=time,
         )
     return Course(
-        name=course_soup.select_one(".typography_landingH3__vTjok").text + " Вечірній",
+        name=course_soup.select_one(
+            ".typography_landingH3__vTjok"
+        ).text + " Вечірній",
         short_description=course_soup.select_one(
             ".CourseCard_courseDescription__Unsqj"
         ).text,
