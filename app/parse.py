@@ -9,10 +9,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
 URL = "https://mate.academy/"
-SERVICE = (
-    "/Users/bohdan_lysachenko/PycharmProjects/"
-    "py-ecommerce-selenium-scraping/chromedriver_mac64/chromedriver"
-)
+SERVICE = "chromedriver_mac64/chromedriver"
 
 
 driver: WebDriver | None = None
