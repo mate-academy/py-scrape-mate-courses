@@ -75,8 +75,8 @@ def get_all_courses() -> list[Course]:
     return course_objects
 
 
-def main():
-    print(get_all_courses())
+def main() -> None:
+    get_all_courses()
 
 
 if __name__ == "__main__":
