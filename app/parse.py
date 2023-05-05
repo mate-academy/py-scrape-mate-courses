@@ -17,18 +17,29 @@ class Course:
     short_description: str
     course_type: CourseType
 
-    def __str__(self):
-        return f"name={self.name};" \
-               f" short_description={self.short_description};" \
-               f" course_type={self.course_type.value}"
+    def __str__(self) -> str:
+        return (
+            f"name={self.name};"
+            f" short_description={self.short_description};"
+            f" course_type={self.course_type.value}"
+        )
 
 
 def parse_single_product(course_soup: BeautifulSoup) -> Course:
     name = course_soup.select_one(".typography_landingH3__vTjok").text
-    short_description = course_soup.select_one(".typography_landingMainText__Ux18x.CourseCard_courseDescription__Unsqj").text
-    course_type = CourseType.PART_TIME if "Вечірній" in name else CourseType.FULL_TIME
+    short_description = (
+        course_soup.select_one(
+            ".typography_landingMainText__Ux18x"
+            ".CourseCard_courseDescription__Unsqj"
+        ).text
+    )
+    course_type = (
+        CourseType.PART_TIME if "Вечірній" in name else CourseType.FULL_TIME
+    )
 
-    return Course(name=name, short_description=short_description, course_type=course_type)
+    return Course(
+        name=name, short_description=short_description, course_type=course_type
+    )
 
 
 def get_all_courses() -> List[Course]:
@@ -36,7 +47,9 @@ def get_all_courses() -> List[Course]:
     soup = BeautifulSoup(page, "html.parser")
 
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
-    parsed_courses = [parse_single_product(course_soup) for course_soup in courses]
+    parsed_courses = [
+        parse_single_product(course_soup) for course_soup in courses
+    ]
 
     return parsed_courses
 
