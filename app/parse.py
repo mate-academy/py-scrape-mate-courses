@@ -73,6 +73,7 @@ def parse_course(course: Tag) -> Course:
         f"topics: {details[1]}",
         f"duration: {details[2]}",
     )
+
     return Course(
         name=title,
         short_description=description,
