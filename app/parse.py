@@ -23,8 +23,13 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
     short_description = course_soup.select_one(
         ".typography_landingMainText__Ux18x"
     ).text,
-    course_type = CourseType.PART_TIME if "Вечірній" in name else CourseType.FULL_TIME
-    return Course(name=name, short_description=short_description, course_type=course_type)
+    course_type = (CourseType.PART_TIME if "Вечірній" in name
+                   else CourseType.FULL_TIME)
+    return Course(
+        name=name,
+        short_description=short_description,
+        course_type=course_type
+    )
 
 
 def get_all_courses() -> list[Course]:
