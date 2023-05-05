@@ -4,10 +4,14 @@ beautifulsoup4==4.12.2
 certifi==2022.12.7
 charset-normalizer==3.1.0
 exceptiongroup==1.1.1
+flake8==6.0.0
 h11==0.14.0
 idna==3.4
+mccabe==0.7.0
 outcome==1.2.0
 pip==22.3.1
+pycodestyle==2.10.0
+pyflakes==3.0.1
 PySocks==1.7.1
 requests==2.29.0
 selenium==4.9.0
