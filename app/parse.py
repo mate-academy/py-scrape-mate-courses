@@ -34,7 +34,9 @@ def parse_single_course(course_soup: Tag, course_type: CourseType) -> Course:
     detail_page = requests.get(urljoin(BASE_URL, detail_href)).content
     detail_soup = BeautifulSoup(detail_page, "html.parser")
 
-    duration_elem = detail_soup.select_one("div.CourseModulesHeading_courseDuration__f_c3H")
+    duration_elem = detail_soup.select_one(
+        "div.CourseModulesHeading_courseDuration__f_c3H"
+    )
     months_duration = duration_elem.text if duration_elem is not None else None
 
     return Course(
