@@ -57,7 +57,3 @@ def get_all_courses() -> list[Course]:
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
 
     return [parse_single_course(course) for course in courses]
-
-
-if __name__ == "__main__":
-    get_all_courses()
