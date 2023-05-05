@@ -38,7 +38,6 @@ def get_all_courses() -> list[Course]:
     driver = webdriver.Chrome(service=service, options=options)
     driver.get(URL)
     soup = BeautifulSoup(driver.page_source, "html.parser")
-    driver.quit()
     full_time_soup = soup.select(
         "[id=full-time] .CourseCard_cardContainer__7_4lK"
     )
