@@ -23,7 +23,9 @@ class Course:
 def parse_single_course(course_dict: dict) -> Course:
     name = course_dict['nameShort({"domain":"ua","lang":"uk"})']
     is_part_time = "Вечірній" in name.split()
-    course_type = CourseType.PART_TIME if is_part_time else CourseType.FULL_TIME
+    course_type = (
+        CourseType.PART_TIME if is_part_time else CourseType.FULL_TIME
+    )
     return Course(name, course_dict["description"], course_type)
 
 
