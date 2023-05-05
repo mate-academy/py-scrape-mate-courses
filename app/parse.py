@@ -18,7 +18,7 @@ BASE_URL = "https://mate.academy/"
 @dataclass
 class Course:
     name: str
-    description: str
+    short_description: str
     course_type: CourseType
 
 
@@ -38,9 +38,9 @@ def parse_course(course_soup: BeautifulSoup) -> Course:
 
     return Course(
         name=course_name,
-        description=description,
+        short_description=description,
         course_type=CourseType.PART_TIME
-        if "Вечір" in course_name
+        if "Вечірній" in course_name
         else CourseType.FULL_TIME,
     )
 
