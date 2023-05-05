@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from dataclasses import dataclass
 from enum import Enum
 
+from selenium.webdriver.support.wait import WebDriverWait
+
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
