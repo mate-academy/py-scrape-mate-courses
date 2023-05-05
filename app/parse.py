@@ -81,6 +81,3 @@ def get_all_courses() -> list[Course]:
             By.CLASS_NAME, "CourseCard_cardContainer__7_4lK"
         )
         return [parse_single_course(course) for course in courses]
-
-
-get_all_courses()
