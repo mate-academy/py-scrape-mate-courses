@@ -20,6 +20,7 @@ url = "https://mate.academy"
 driver = webdriver.Chrome()
 driver.get(url)
 soup = BeautifulSoup(driver.page_source, "html.parser")
+WebDriverWait(driver, 10)
 
 
 def get_courses(course_type: CourseType) -> list[Course]:
