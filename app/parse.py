@@ -3,6 +3,7 @@ from enum import Enum
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
 
 URL = "https://mate.academy/"
@@ -31,10 +32,13 @@ def parse_course(course_soup: Tag, course_type: CourseType) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    serv = Service("/usr/bin/chromedriver")
-    driver = webdriver.Chrome(service=serv)
+    service = Service("/usr/local/bin/chromedriver")
+    options = Options()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(service=service, options=options)
     driver.get(URL)
     soup = BeautifulSoup(driver.page_source, "html.parser")
+    driver.quit()
     full_time_soup = soup.select(
         "[id=full-time] .CourseCard_cardContainer__7_4lK"
     )
