@@ -3,7 +3,16 @@ from bs4 import BeautifulSoup
 from dataclasses import dataclass
 from enum import Enum
 
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+
+service = Service("/usr/local/bin/chromedriver")
+options = Options()
+options.add_argument("--headless")
+driver = webdriver.Chrome(service=service, options=options)
+url = "https://mate.academy"
+driver.get(url)
+soup = BeautifulSoup(driver.page_source, "html.parser")
 
 
 class CourseType(Enum):
@@ -16,13 +25,6 @@ class Course:
     name: str
     short_description: str
     course_type: CourseType
-
-
-url = "https://mate.academy"
-driver = webdriver.Chrome()
-driver.get(url)
-soup = BeautifulSoup(driver.page_source, "html.parser")
-WebDriverWait(driver, 10)
 
 
 def get_courses(course_type: CourseType) -> list[Course]:
@@ -39,7 +41,7 @@ def get_courses(course_type: CourseType) -> list[Course]:
             "p",
             {
                 "class": "typography_landingMainText__Ux18x "
-                "CourseCard_courseDescription__Unsqj"
+                         "CourseCard_courseDescription__Unsqj"
             },
         ).text
         course = Course(
