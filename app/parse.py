@@ -1,4 +1,3 @@
-import json
 from dataclasses import dataclass
 from enum import Enum
 from typing import List
@@ -21,33 +20,43 @@ class Course:
     course_type: CourseType
 
 
-def parse_single_course(course_dict: dict) -> Course:
-    name = course_dict['nameShort({"domain":"ua","lang":"uk"})']
-    is_part_time = name.split()[-1] == "Вечірній"
-
+def parse_single_course(
+        name: str,
+        description: str,
+        course_type: CourseType
+) -> Course:
     return Course(
         name=name,
-        short_description=course_dict["description"],
-        course_type=(
-            CourseType.PART_TIME if is_part_time else CourseType.FULL_TIME
-        )
+        short_description=description,
+        course_type=course_type
     )
 
 
-def parse_courses_from_script_data(data: dict) -> List[Course]:
+def parse_courses_from_html(soup: BeautifulSoup) -> List[Course]:
+    course_soup = soup.select("section .CourseCard_cardContainer__7_4lK")
+    courses = []
 
-    courses_data = [val for key, val in data.items() if key.startswith("Course")]
+    for course in course_soup:
+        name = course.select_one(".mb-16 span").text
+        description = course.select_one(
+            ".CourseCard_flexContainer__dJk4p p"
+        ).text
+        if len(name.split()) < 3:
+            course_type = CourseType.FULL_TIME
+        else:
+            course_type = CourseType.PART_TIME
 
-    return [parse_single_course(course) for course in courses_data]
+        courses.append(
+            parse_single_course(name.split()[1], description, course_type)
+        )
+
+    return courses
 
 
 def get_all_courses() -> List[Course]:
     req = requests.get(URL)
     soup = BeautifulSoup(req.content, "html.parser")
-    script = soup.select_one("#__NEXT_DATA__")
-    data = dict(json.loads(script.text))["props"]["apolloState"]
-    courses = parse_courses_from_script_data(data)
-
+    courses = parse_courses_from_html(soup)
     return courses
 
 
