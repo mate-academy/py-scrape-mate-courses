@@ -52,6 +52,8 @@ def get_all_courses() -> list[Course]:
         parse_course(course_soup, CourseType.PART_TIME)
         for course_soup in part_time_soup
     ]
+    driver.quit()
+
     return full_time_courses + part_time_courses
 
 
