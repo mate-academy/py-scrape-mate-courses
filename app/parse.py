@@ -33,6 +33,7 @@ def get_all_courses() -> list[Course]:
     time.sleep(15)
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
+    driver.quit()
 
     block_ft = soup.find("div", {"id": "full-time"})
     sections1 = block_ft.select(".CourseCard_cardContainer__7_4lK")
