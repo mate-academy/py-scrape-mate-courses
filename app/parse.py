@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -33,7 +32,6 @@ def get_all_courses() -> list[Course]:
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
     driver.get(BASE_URL)
-    # time.sleep(15)
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
     driver.quit()
