@@ -3,6 +3,7 @@ from enum import Enum
 import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 BASE_URL = "https://mate.academy/"
 
@@ -28,9 +29,11 @@ def get_single_course(section: str, course_type: CourseType) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    driver = webdriver.Chrome()
+    options = Options()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(options=options)
     driver.get(BASE_URL)
-    time.sleep(15)
+    # time.sleep(15)
     html = driver.page_source
     soup = BeautifulSoup(html, "html.parser")
     driver.quit()
