@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from selenium import webdriver
 from bs4 import BeautifulSoup
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
 BASE_URL = "https://mate.academy/"
@@ -34,8 +35,10 @@ def pars_single_course(course: BeautifulSoup) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    service = Service("/usr/bin/chromedriver")
-    driver = webdriver.Chrome(service=service)
+    service = Service("/usr/local/bin/chromedriver")
+    options = Options()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(service=service, options=options)
     driver.get(BASE_URL)
     time.sleep(1)
     page = driver.page_source
@@ -47,6 +50,11 @@ def get_all_courses() -> list[Course]:
 
     print(len(courses_list))
     return [pars_single_course(course) for course in courses_list]
+
+
+# chrome_path = ChromeDriverManager().install()
+# chrome_service = Service(chrome_path)
+# driver = Chrome(service=chrome_service)
 
 
 if __name__ == "__main__":
