@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
 
+import chromedriver_autoinstaller
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
@@ -33,7 +35,11 @@ def parse_one_course(course: WebElement, course_type: CourseType) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    driver = webdriver.Chrome()
+    chromedriver_autoinstaller.install()
+
+    options = Options()
+    options.add_argument('--headless')
+    driver = webdriver.Chrome(options=options)
     driver.get(HOME_URL)
     driver.execute_script("window.scrollBy(0, 1000)")
     all_courses = []
@@ -54,4 +60,4 @@ def get_all_courses() -> list[Course]:
 
 
 if __name__ == "__main__":
-    get_all_courses()
+    print(get_all_courses())
