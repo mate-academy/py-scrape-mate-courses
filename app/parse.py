@@ -36,9 +36,8 @@ def parse_one_course(course: WebElement, course_type: CourseType) -> Course:
 
 def get_all_courses() -> list[Course]:
     chromedriver_autoinstaller.install()
-
     options = Options()
-    options.add_argument('--headless')
+    options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
     driver.get(HOME_URL)
     driver.execute_script("window.scrollBy(0, 1000)")
