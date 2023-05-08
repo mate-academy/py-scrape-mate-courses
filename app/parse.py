@@ -6,14 +6,14 @@ from enum import Enum
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
-service = Service("/usr/local/bin/chromedriver")
-options = Options()
-options.add_argument("--headless")
-driver = webdriver.Chrome(service=service, options=options)
-url = "https://mate.academy"
-driver.get(url)
-soup = BeautifulSoup(driver.page_source, "html.parser")
-
+# service = Service("/usr/local/bin/chromedriver")
+# options = Options()
+# options.add_argument("--headless")
+# driver = webdriver.Chrome(service=service, options=options)
+# url = "https://mate.academy"
+# driver.get(url)
+# soup = BeautifulSoup(driver.page_source, "html.parser")
+URL = "https://mate.academy"
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
@@ -27,7 +27,17 @@ class Course:
     course_type: CourseType
 
 
-def get_courses(course_type: CourseType) -> list[Course]:
+def get_driver() -> webdriver:
+    service = Service("/usr/local/bin/chromedriver")
+    options = Options().add_argument("--headless")
+    return webdriver.Chrome(service=service, options=options)
+
+def close_driver(driver: webdriver) -> None:
+    driver.quit()
+
+def get_courses(driver: webdriver, course_type: CourseType) -> list[Course]:
+    driver.get(URL)
+    soup = BeautifulSoup(driver.page_source, "html.parser")
     courses_list = []
     courses = soup.find("div", {"id": course_type.value})
     courses = courses.find_all(
@@ -52,10 +62,11 @@ def get_courses(course_type: CourseType) -> list[Course]:
 
 
 def get_all_courses() -> list[Course]:
+    driver = get_driver()
     all_courses = []
-    all_courses.extend(get_courses(CourseType.FULL_TIME))
-    all_courses.extend(get_courses(CourseType.PART_TIME))
+    all_courses.extend(get_courses(driver, CourseType.FULL_TIME))
+    all_courses.extend(get_courses(driver, CourseType.PART_TIME))
+    close_driver(driver)
     return all_courses
 
 
-driver.quit()
