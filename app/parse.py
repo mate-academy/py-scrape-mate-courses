@@ -21,7 +21,7 @@ class Course:
 
 
 def make_course_object(
-    course: BeautifulSoup, course_type: CourseType
+        course: BeautifulSoup, course_type: CourseType
 ) -> Course:
     name = course.find("a").text.replace("Курс ", "")
     href = MAIN_URL + course.find("a").get("href")
@@ -41,38 +41,27 @@ def get_all_courses() -> list[Course]:
     response = requests.get(MAIN_URL).content
     soup = BeautifulSoup(response, "html.parser")
 
-    part_time = soup.find("div", {"id": "part-time"})
-
     courses_html = {
-        "full-time": soup.find("div", {"id": "full-time"}).find_all(
+        "full-time": soup.find_all(
             "section", {"class": "CourseCard_cardContainer__7_4lK"}
         ),
-        "part-time": soup.find("div", {"id": "full-time"}).find_all(
+        "part-time": soup.find_all(
             "section", {"class": "CourseCard_cardContainer__7_4lK"}
         ),
     }
 
-    course_objects = []
+    full_time_list = [
+        make_course_object(course=course, course_type=CourseType.FULL_TIME)
+        for course
+        in courses_html.get("full-time")
+    ]
+    part_time_list = [
+        make_course_object(course=course, course_type=CourseType.PART_TIME)
+        for course
+        in courses_html.get("part-time")
+    ]
 
-    for course_type, course_list in courses_html.items():
-        if course_type == "full-time":
-            full_time = [
-                make_course_object(
-                    course=course, course_type=CourseType.FULL_TIME
-                )
-                for course in course_list
-            ]
-            course_objects.extend(full_time)
-        if course_type == "part-time":
-            part_time = [
-                make_course_object(
-                    course=course, course_type=CourseType.PART_TIME
-                )
-                for course in course_list
-            ]
-            course_objects.extend(part_time)
-
-    return course_objects
+    return full_time_list + part_time_list
 
 
 def main() -> None:
