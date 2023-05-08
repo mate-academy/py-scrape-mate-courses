@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
+
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-
-HOME_URL = "https://mate.academy/"
 
 
 class CourseType(Enum):
@@ -45,7 +44,7 @@ def get_all_courses() -> list[Course]:
         executable_path="path/to/chromedriver", options=chrome_options
     )
 
-    driver.get(HOME_URL)
+    driver.get("https://mate.academy/")
 
     driver.implicitly_wait(10)
 
