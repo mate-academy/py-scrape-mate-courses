@@ -25,17 +25,17 @@ def parse_single_course(course_dict: dict) -> Course:
     if not name:
         return None
 
-    part_time = "вечірній" in name.lower()
+    is_part_time = "вечірній" in name.lower()
     return Course(
         name=name,
         short_description=course_dict.get("description") or "",
         course_type=(
-            CourseType.PART_TIME if part_time else CourseType.FULL_TIME
+            CourseType.PART_TIME if is_part_time else CourseType.FULL_TIME
         ),
     )
 
 
-def get_all_courses() -> [Course]:
+def get_all_courses() -> list[Course]:
     try:
         req = requests.get("https://mate.academy/")
         req.raise_for_status()
@@ -52,8 +52,7 @@ def get_all_courses() -> [Course]:
             course for course in map(parse_single_course, courses) if course
         ]
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching courses: {e}")
-        return []
+        raise Exception(f"Error fetching courses: {e}")
 
 
 if __name__ == "__main__":
