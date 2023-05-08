@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
 
 from enum import Enum
 
@@ -19,36 +19,37 @@ class Course:
     course_type: CourseType
 
 
-def parse_single_course(course: BeautifulSoup, course_type: str) -> Course:
-    print(
-        dict(
-            name=course.select_one("a > span").text,
-            short_description=course.select_one(
-                "div.cell.large-6> section:nth-child(1) > div > p"
-            ).text,
-            course_type=course_type,
-        )
+def parse_single_course(course: BeautifulSoup) -> Course:
+    instance = Course(
+        name=course.select_one("a > span").text,
+        short_description=course.select_one(
+            ".CourseCard_courseDescription__Unsqj"
+        ).text,
+        course_type=CourseType.FULL_TIME,
     )
+
+    if "Вечірній" in instance.name:
+        instance.course_type = CourseType.PART_TIME
+
+    return instance
 
 
 def get_all_courses() -> list[Course]:
-    page = requests.get(BASE_URL).content
-    soup = BeautifulSoup(page, "html.parser")
-    full_time_courses = soup.select("#full-time")
-    full_time = [
-        parse_single_course(course, "full_time")
-        for course in full_time_courses
+    driver = webdriver.Chrome()
+    driver.get(BASE_URL)
+    driver.implicitly_wait(10)
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    courses = soup.select(".CourseCard_cardContainer__7_4lK")
+    all_courses = [
+        parse_single_course(course)
+        for course in courses
     ]
-    part_time_courses = soup.select("#part-time")
-    part_time = [
-        parse_single_course(course, "part_time")
-        for course in part_time_courses
-    ]
-    return full_time + part_time
+    print(all_courses)
+    return all_courses
 
 
 def main() -> None:
-    get_all_courses()
+    print(get_all_courses())
 
 
 if __name__ == "__main__":
