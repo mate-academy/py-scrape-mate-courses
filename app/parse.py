@@ -4,6 +4,8 @@ from enum import Enum
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+
+
 URL = "https://mate.academy/"
 
 
@@ -42,9 +44,7 @@ def get_single_course(raw_data: Tag) -> Course:
 def get_all_courses() -> list[Course]:
     options = Options()
     options.add_argument("--headless")
-    chrome = webdriver.Chrome(
-        options=options, executable_path="chromedriver-path"
-    )
+    chrome = webdriver.Chrome(options=options, executable_path="chromedriver-path")
     chrome.get(URL)
 
     chrome.implicitly_wait(20)
