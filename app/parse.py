@@ -5,9 +5,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-URL = "https://mate.academy/"
-
-
 class CourseType(Enum):
     FULL_TIME = "full-time"
     PART_TIME = "part-time"
@@ -38,7 +35,7 @@ def get_all_courses() -> list[Course]:
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     driver = webdriver.Chrome(options=chrome_options)
-    driver.get(URL)
+    driver.get("https://mate.academy/")
 
     driver.implicitly_wait(1)
 
