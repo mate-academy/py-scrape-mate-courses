@@ -26,7 +26,7 @@ class Course:
     duration: str
 
 
-def parse_details_course(link: str) -> tuple:
+def parse_details_course(link: str) -> dict:
     url = urljoin(BASE_URL, link)
     response = requests.get(url).content
     soup = BeautifulSoup(response, "html.parser")
@@ -46,7 +46,11 @@ def parse_details_course(link: str) -> tuple:
     )
     duration = duration.text if duration else None
 
-    return num_of_modules, num_of_topics, duration
+    return {
+        "num_of_modules": num_of_modules,
+        "num_of_topics": num_of_topics,
+        "duration": duration,
+    }
 
 
 def parse_course(course: Tag) -> Course:
@@ -65,22 +69,14 @@ def parse_course(course: Tag) -> Course:
     ]
 
     details = parse_details_course(link)
-    print(
-        f"name: {title}",
-        f"short_description: {description}",
-        f"course_type: {course_type}",
-        f"modules: {details[0]}",
-        f"topics: {details[1]}",
-        f"duration: {details[2]}",
-    )
 
     return Course(
         name=title,
         short_description=description,
         course_type=course_type,
-        num_of_modules=details[0],
-        num_of_topics=details[1],
-        duration=details[2],
+        num_of_modules=details["num_of_modules"],
+        num_of_topics=details["num_of_topics"],
+        duration=details["duration"],
     )
 
 
@@ -89,6 +85,7 @@ def get_all_courses() -> list[Course]:
     options = Options()
     options.add_argument("--headless")
     driver = webdriver.Chrome(service=service, options=options)
+
     driver.get(BASE_URL)
     source = BeautifulSoup(driver.page_source, "html.parser")
     courses = source.select(".CourseCard_cardContainer__7_4lK")
