@@ -46,6 +46,4 @@ def get_all_courses() -> list[Course]:
 
 
 if __name__ == "__main__":
-    data = get_all_courses()
-    for course in data:
-        print(course)
+    get_all_courses()
