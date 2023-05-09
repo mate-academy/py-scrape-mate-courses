@@ -32,8 +32,7 @@ def parse_single_course(course: BeautifulSoup) -> Course:
         instance.course_type = CourseType.PART_TIME
 
     return instance
-# options.add_argument("--headless")
-# options.add_argument("--disable-gpu")
+
 
 def get_driver() -> webdriver:
     options = webdriver.ChromeOptions()
@@ -57,7 +56,7 @@ def get_all_courses() -> list[Course]:
 
 
 def main() -> None:
-    print(get_all_courses())
+    get_all_courses()
 
 
 if __name__ == "__main__":
