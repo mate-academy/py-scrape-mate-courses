@@ -32,11 +32,13 @@ def parse_single_course(course: BeautifulSoup) -> Course:
         instance.course_type = CourseType.PART_TIME
 
     return instance
-
+# options.add_argument("--headless")
+# options.add_argument("--disable-gpu")
 
 def get_driver() -> webdriver:
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
     driver = webdriver.Chrome(options=options)
     driver.get(BASE_URL)
     driver.implicitly_wait(10)
@@ -55,7 +57,7 @@ def get_all_courses() -> list[Course]:
 
 
 def main() -> None:
-    get_all_courses()
+    print(get_all_courses())
 
 
 if __name__ == "__main__":
