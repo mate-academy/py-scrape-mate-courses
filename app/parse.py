@@ -37,7 +37,7 @@ def parse_single_course(course_soup: Tag) -> Course:
 def get_all_courses() -> list[Course]:
     chrome_options = Options()
     chrome_options.add_argument("--headless")
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(URL)
 
     driver.implicitly_wait(1)
