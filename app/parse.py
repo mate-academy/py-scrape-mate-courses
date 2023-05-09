@@ -34,12 +34,17 @@ def parse_single_course(course: BeautifulSoup) -> Course:
     return instance
 
 
-def get_all_courses() -> list[Course]:
+def get_driver() -> webdriver:
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
     driver.get(BASE_URL)
     driver.implicitly_wait(10)
+    return driver
+
+
+def get_all_courses() -> list[Course]:
+    driver = get_driver()
     soup = BeautifulSoup(driver.page_source, "html.parser")
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
     all_courses = [
