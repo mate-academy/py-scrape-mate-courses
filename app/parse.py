@@ -35,7 +35,9 @@ def parse_single_course(course: BeautifulSoup) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(options=options)
     driver.get(BASE_URL)
     driver.implicitly_wait(10)
     soup = BeautifulSoup(driver.page_source, "html.parser")
