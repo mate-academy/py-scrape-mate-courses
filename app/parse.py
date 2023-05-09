@@ -1,5 +1,10 @@
 from dataclasses import dataclass
+from bs4 import BeautifulSoup
+from selenium import webdriver
+
 from enum import Enum
+
+BASE_URL = "https://mate.academy/"
 
 
 class CourseType(Enum):
@@ -14,5 +19,45 @@ class Course:
     course_type: CourseType
 
 
+def parse_single_course(course: BeautifulSoup) -> Course:
+    instance = Course(
+        name=course.select_one("a > span").text,
+        short_description=course.select_one(
+            ".CourseCard_courseDescription__Unsqj"
+        ).text,
+        course_type=CourseType.FULL_TIME,
+    )
+
+    if "Вечірній" in instance.name:
+        instance.course_type = CourseType.PART_TIME
+
+    return instance
+
+
+def get_driver() -> webdriver:
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    driver = webdriver.Chrome(options=options)
+    driver.get(BASE_URL)
+    driver.implicitly_wait(10)
+    return driver
+
+
 def get_all_courses() -> list[Course]:
-    pass
+    driver = get_driver()
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+    courses = soup.select(".CourseCard_cardContainer__7_4lK")
+    all_courses = [
+        parse_single_course(course)
+        for course in courses
+    ]
+    return all_courses
+
+
+def main() -> None:
+    get_all_courses()
+
+
+if __name__ == "__main__":
+    main()
