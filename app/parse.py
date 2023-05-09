@@ -44,12 +44,11 @@ def get_all_courses() -> list[Course]:
         parse_single_course(course)
         for course in courses
     ]
-    print(all_courses)
     return all_courses
 
 
 def main() -> None:
-    print(get_all_courses())
+    get_all_courses()
 
 
 if __name__ == "__main__":
