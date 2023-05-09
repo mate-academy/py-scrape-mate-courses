@@ -1,5 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
+from bs4 import BeautifulSoup, Tag
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 
 class CourseType(Enum):
@@ -14,5 +17,33 @@ class Course:
     course_type: CourseType
 
 
+def parse_single_course(course_soup: Tag) -> Course:
+    name = course_soup.select_one(".typography_landingH3__vTjok").text
+    short_description = course_soup.select_one(
+        ".typography_landingMainText__Ux18x"
+    ).text
+    course_type = (CourseType.PART_TIME if "Вечірній" in name
+                   else CourseType.FULL_TIME)
+    return Course(
+        name=name,
+        short_description=short_description,
+        course_type=course_type
+    )
+
+
 def get_all_courses() -> list[Course]:
-    pass
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.get("https://mate.academy/")
+
+    driver.implicitly_wait(1)
+
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+
+    courses = soup.select(".CourseCard_cardContainer__7_4lK")
+    return [parse_single_course(course_soup) for course_soup in courses]
+
+
+if __name__ == "__main__":
+    get_all_courses()
