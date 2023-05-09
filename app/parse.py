@@ -19,6 +19,17 @@ class Course:
     course_type: CourseType
 
 
+def connection() -> BeautifulSoup:
+    options = Options()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(options=options)
+    driver.get(BASE_URL)
+    html = driver.page_source
+    soup = BeautifulSoup(html, "html.parser")
+    driver.quit()
+    return soup
+
+
 def get_single_course(section: str, course_type: CourseType) -> Course:
     name = section.select_one(".typography_landingH3__vTjok").text
     short_description = section.select_one(
@@ -28,13 +39,7 @@ def get_single_course(section: str, course_type: CourseType) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    options = Options()
-    options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
-    driver.get(BASE_URL)
-    html = driver.page_source
-    soup = BeautifulSoup(html, "html.parser")
-    driver.quit()
+    soup = connection()
 
     block_ft = soup.find("div", {"id": "full-time"})
     sections1 = block_ft.select(".CourseCard_cardContainer__7_4lK")
