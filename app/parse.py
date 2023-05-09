@@ -34,20 +34,33 @@ def parse_single_course(data: Tag) -> Course:
     )
 
 
-def get_all_courses() -> list[Course]:
+def get_page_source(url: str) -> str:
     options = Options()
     options.add_argument("--headless")
     chrome = webdriver.Chrome(
         options=options, executable_path="chromedriver-path"
     )
-    chrome.get(URL)
-
+    chrome.get(url)
     chrome.implicitly_wait(10)
 
-    soup = BeautifulSoup(chrome.page_source, "html.parser")
+    page_source = chrome.page_source
+    chrome.quit()
+
+    return page_source
+
+
+def parse_courses_from_page(page_source: str) -> list[Course]:
+    soup = BeautifulSoup(page_source, "html.parser")
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
 
     return [parse_single_course(course) for course in courses]
+
+
+def get_all_courses() -> list[Course]:
+    page_source = get_page_source(URL)
+    courses = parse_courses_from_page(page_source)
+
+    return courses
 
 
 if __name__ == "__main__":
