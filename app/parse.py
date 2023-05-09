@@ -33,6 +33,12 @@ class Course:
     course_type: CourseType
 
 
+def set_driver() -> webdriver:
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    return webdriver.Chrome(options=chrome_options)
+
+
 def parse_single_course(
         course_soup: BeautifulSoup,
         course_type: CourseType
@@ -51,28 +57,22 @@ def parse_single_course(
 
 
 def get_all_courses() -> list[Course]:
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    driver = webdriver.Chrome(
-        "/usr/lib/chromium-browser/chromedriver",
-        options=chrome_options
-    )
-    driver.get(BASE_URL)
-    page = driver.page_source
-    soup = BeautifulSoup(page, "html.parser")
-    courses_list = []
+    with set_driver() as driver:
+        driver.get(BASE_URL)
+        page = driver.page_source
+        soup = BeautifulSoup(page, "html.parser")
+        courses_list = []
 
-    for course_type in CourseType:
-        section = soup.find("div", {"id": course_type.value})
-        courses = section.findAll(
-            "section", {"class": "CourseCard_cardContainer__7_4lK"}
-        )
+        for course_type in CourseType:
+            section = soup.find("div", {"id": course_type.value})
+            courses = section.findAll(
+                "section", {"class": "CourseCard_cardContainer__7_4lK"}
+            )
 
-        for course in courses:
-            courses_list.append(parse_single_course(course, course_type))
+            for course in courses:
+                courses_list.append(parse_single_course(course, course_type))
 
-    return courses_list
+        return courses_list
 
 
 if __name__ == "__main__":
