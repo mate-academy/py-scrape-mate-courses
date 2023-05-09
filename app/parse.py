@@ -6,8 +6,6 @@ from bs4 import BeautifulSoup, Tag, ResultSet
 from dataclasses import dataclass
 from enum import Enum
 
-HOME_URL = "https://mate.academy/"
-
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
@@ -68,11 +66,10 @@ def get_all_courses() -> List[Course]:
         "/usr/lib/chromium-browser/chromedriver",
         options=chrome_options
     )
-    driver.get(HOME_URL)
+    driver.get("https://mate.academy/")
     page_source = driver.page_source
     soup = BeautifulSoup(page_source, "html.parser")
     courses = get_all_parsed_curses(soup)
     driver.quit()
 
     return courses
-
