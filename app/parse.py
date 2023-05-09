@@ -71,7 +71,6 @@ def get_all_courses() -> List[Course]:
     driver.get(HOME_URL)
     page_source = driver.page_source
     soup = BeautifulSoup(page_source, "html.parser")
-
     courses = get_all_parsed_curses(soup)
     driver.quit()
 
