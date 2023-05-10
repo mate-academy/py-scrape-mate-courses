@@ -4,9 +4,11 @@ from enum import Enum
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.wait import WebDriverWait
 
 URL = "https://mate.academy/"
 
@@ -73,10 +75,13 @@ def parse_single_course(course: WebElement) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    with webdriver.Chrome() as new_drier:
+    cromedriver = "/Users/bohdan_lysachenko/PycharmProjects/py-scrape-mate-courses/chromedriver_mac64/chromedriver"
+    options = Options()
+    options.add_argument("--headless")
+    with webdriver.Chrome(cromedriver, options=options) as new_drier:
         set_driver(new_drier)
         _driver.get(URL)
-        time.sleep(5)
+        WebDriverWait(_driver, 5)
         courses = _driver.find_elements(
             By.CLASS_NAME, "CourseCard_cardContainer__7_4lK"
         )
