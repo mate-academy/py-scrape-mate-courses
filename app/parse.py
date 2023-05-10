@@ -31,12 +31,18 @@ def parse_course(course_soup: Tag, course_type: CourseType) -> Course:
     )
 
 
-def get_all_courses() -> list[Course]:
+def get_driver() -> webdriver:
     service = Service("/usr/local/bin/chromedriver")
     options = Options()
     options.add_argument("--headless")
     driver = webdriver.Chrome(service=service, options=options)
     driver.get(URL)
+
+    return driver
+
+
+def get_all_courses() -> list[Course]:
+    driver = get_driver()
     soup = BeautifulSoup(driver.page_source, "html.parser")
     full_time_soup = soup.select(
         "[id=full-time] .CourseCard_cardContainer__7_4lK"
