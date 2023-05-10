@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import time
 from enum import Enum
 import requests
 from bs4 import BeautifulSoup
@@ -75,7 +74,8 @@ def parse_single_course(course: WebElement) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    cromedriver = "/Users/bohdan_lysachenko/PycharmProjects/py-scrape-mate-courses/chromedriver_mac64/chromedriver"
+    cromedriver = ("/Users/bohdan_lysachenko/PycharmProjects/"
+                   "py-scrape-mate-courses/chromedriver_mac64/chromedriver")
     options = Options()
     options.add_argument("--headless")
     with webdriver.Chrome(cromedriver, options=options) as new_drier:
