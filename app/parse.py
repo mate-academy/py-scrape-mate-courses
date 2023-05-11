@@ -67,5 +67,5 @@ def get_all_courses() -> list[Course]:
     return all_courses
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     get_all_courses()
