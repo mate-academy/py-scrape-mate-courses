@@ -6,7 +6,6 @@ from enum import Enum
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
-
 URL = "https://mate.academy"
 
 
@@ -25,7 +24,7 @@ class Course:
 def get_driver() -> webdriver:
     service = Service("/usr/local/bin/chromedriver")
     options = Options().add_argument("--headless")
-    return webdriver.Chrome(service=service, options=options)
+    return webdriver.Chrome(service=service, options=options, executable_path="chromedriver-path")
 
 
 def close_driver(driver: webdriver) -> None:
