@@ -6,14 +6,9 @@ from enum import Enum
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 
-# service = Service("/usr/local/bin/chromedriver")
-# options = Options()
-# options.add_argument("--headless")
-# driver = webdriver.Chrome(service=service, options=options)
-# url = "https://mate.academy"
-# driver.get(url)
-# soup = BeautifulSoup(driver.page_source, "html.parser")
+
 URL = "https://mate.academy"
+
 
 class CourseType(Enum):
     FULL_TIME = "full-time"
@@ -32,8 +27,10 @@ def get_driver() -> webdriver:
     options = Options().add_argument("--headless")
     return webdriver.Chrome(service=service, options=options)
 
+
 def close_driver(driver: webdriver) -> None:
     driver.quit()
+
 
 def get_courses(driver: webdriver, course_type: CourseType) -> list[Course]:
     driver.get(URL)
@@ -70,3 +67,5 @@ def get_all_courses() -> list[Course]:
     return all_courses
 
 
+if __name__ == '__main__':
+    get_all_courses()
