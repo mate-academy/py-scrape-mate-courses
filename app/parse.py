@@ -1,11 +1,18 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Iterable
+
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 COURSES_URL = "https://mate.academy/"
+service = Service("/usr/local/bin/chromedriver")
+options = Options()
+options.add_argument("--headless")
+DRIVER = webdriver.Chrome(service=service, options=options)
 
 
 class CourseType(Enum):
@@ -33,14 +40,15 @@ def parse_one_course(item: Tag) -> Course:
         course_type=course_type)
 
 
-def get_all_courses() -> list[Course]:
-    service = Service("/usr/local/bin/chromedriver")
-    options = Options()
-    options.add_argument("--headless")
-    driver = webdriver.Chrome(service=service, options=options)
+def get_page_data(selector: str, driver: WebDriver) -> Iterable:
     driver.get(COURSES_URL)
     source = BeautifulSoup(driver.page_source, "html.parser")
-    courses = source.select(".CourseCard_cardContainer__7_4lK")
+    courses = source.select(selector)
     driver.quit()
+    return courses
+
+
+def get_all_courses() -> list[Course]:
+    courses = get_page_data(".CourseCard_cardContainer__7_4lK", DRIVER)
 
     return [parse_one_course(course) for course in courses]
