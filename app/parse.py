@@ -24,7 +24,11 @@ class Course:
 def get_driver() -> webdriver:
     service = Service("/usr/local/bin/chromedriver")
     options = Options().add_argument("--headless")
-    return webdriver.Chrome(service=service, options=options, executable_path="chromedriver-path")
+    return webdriver.Chrome(
+        service=service,
+        options=options,
+        executable_path="chromedriver-path"
+    )
 
 
 def close_driver(driver: webdriver) -> None:
