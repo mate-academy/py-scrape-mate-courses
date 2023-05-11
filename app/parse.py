@@ -37,6 +37,7 @@ def close_driver(driver: webdriver) -> None:
 
 def get_courses(driver: webdriver, course_type: CourseType) -> list[Course]:
     driver.get(URL)
+    driver.implicitly_wait(20)
     soup = BeautifulSoup(driver.page_source, "html.parser")
     courses_list = []
     courses = soup.find("div", {"id": course_type.value})
