@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from selenium.webdriver import Chrome
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -35,7 +36,13 @@ def parse_course(course: WebElement, course_type: CourseType) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    driver = Chrome(service=Service(ChromeDriverManager().install()))
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+
+    driver = Chrome(
+        service=Service(ChromeDriverManager().install()),
+        options=chrome_options,
+    )
     driver.get(BASE_URL)
 
     full_time_courses = driver.find_element(By.ID, "full-time").find_elements(
