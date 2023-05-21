@@ -23,9 +23,6 @@ class Course:
     duration: str
 
 
-URL = "https://mate.academy/"
-
-
 def parse_details_course(link: str) -> dict:
     url = urljoin(URL, link)
     response = requests.get(url).content
