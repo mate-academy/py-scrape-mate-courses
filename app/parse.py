@@ -29,14 +29,14 @@ def parse_single_course(course_dict: dict) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    pass
     response = requests.get(BASE_URL)
     soup = BeautifulSoup(response.content, "html.parser")
     script_tag = soup.select_one("#__NEXT_DATA__")
     data = json.loads(script_tag.text)["props"]["apolloState"]
     courses = [
-        value for key, value in data.items() if key.startswith("Course")
+        info for course, info in data.items() if course.startswith("Course")
     ]
+    print(courses[0])
     return [parse_single_course(course) for course in courses]
 
 
