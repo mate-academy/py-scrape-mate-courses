@@ -36,7 +36,6 @@ def get_all_courses() -> list[Course]:
     courses = [
         info for course, info in data.items() if course.startswith("Course")
     ]
-    print(courses[0])
     return [parse_single_course(course) for course in courses]
 
 
