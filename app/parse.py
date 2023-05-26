@@ -21,8 +21,11 @@ class Course:
 
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
     name = course_soup.select_one(".typography_landingH3__vTjok").text
-    course_type = CourseType.PART_TIME if "Вечірній" in name \
-        else CourseType.FULL_TIME
+    course_type = (
+        CourseType.PART_TIME
+        if "Вечірній" in name else
+        CourseType.FULL_TIME
+    )
     return Course(
         name=name,
         short_description=course_soup.select_one(
