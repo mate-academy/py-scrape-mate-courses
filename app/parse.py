@@ -38,6 +38,3 @@ def get_all_courses() -> list[Course]:
     full_time_soup = soup.select(".CourseCard_cardContainer__7_4lK")
 
     return [parse_single_course(course) for course in full_time_soup]
-
-
-print(get_all_courses())
