@@ -13,13 +13,8 @@ course_class = ".CourseCard_cardContainer__7_4lK"
 
 
 class CourseType(Enum):
-    FULL_TIME = False
-    PART_TIME = True
-
-
-# class CourseType(Enum):
-#     FULL_TIME = "full-time"
-#     PART_TIME = "part-time"
+    FULL_TIME = "full-time"
+    PART_TIME = "part-time"
 
 
 @dataclass
@@ -37,10 +32,9 @@ def get_single_course(course_soup: BeautifulSoup) -> Course:
         short_description=course_soup.select_one(
             short_description_class
         ).text,
-        course_type=CourseType(name[-1] == "й")
-        # course_type=CourseType(
-        #     "part-time" if name[-1] == "й" else "full-time"
-        # )
+        course_type=CourseType(
+            "part-time" if name[-1] == "й" else "full-time"
+        )
     )
 
 
