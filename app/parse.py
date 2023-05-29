@@ -33,7 +33,7 @@ def get_single_course(course_soup: BeautifulSoup) -> Course:
             short_description_class
         ).text,
         course_type=CourseType(
-            "part-time" if name[-1] == "й" else "full-time"
+            "part-time" if name.split(" ")[-1] == "Вечірній" else "full-time"
         )
     )
 
