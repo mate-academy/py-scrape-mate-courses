@@ -25,7 +25,9 @@ class Course:
 
 def get_course_url(course_soup: BeautifulSoup) -> BeautifulSoup:
     course_url_element = course_soup.select_one("a")
-    course_url = course_url_element.get("href", "") if course_url_element else ""
+    course_url = (
+        course_url_element.get("href", "") if course_url_element else ""
+    )
     additional_url = urljoin(BASE_URL, course_url)
     page = requests.get(additional_url).content
     single_soup = BeautifulSoup(page, "html.parser")
