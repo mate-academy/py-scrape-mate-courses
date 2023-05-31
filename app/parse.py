@@ -23,11 +23,11 @@ class Course:
     duration: str
 
 
-def get_course_url(course_soup: BeautifulSoup) -> BeautifulSoup:
+def get_course_url(course_soup: BeautifulSoup) -> BeautifulSoup | None:
     course_url_element = course_soup.select_one("a")
-    course_url = (
-        course_url_element.get("href", "") if course_url_element else ""
-    )
+    if not course_url_element:
+        return None
+    course_url = course_url_element.get("href", "")
     additional_url = urljoin(BASE_URL, course_url)
     page = requests.get(additional_url).content
     single_soup = BeautifulSoup(page, "html.parser")
@@ -45,20 +45,23 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
 
     single_soup = get_course_url(course_soup)
 
-    module_count = int(
-        single_soup.select_one(
-            ".CourseModulesHeading_modulesNumber__GNdFP > p"
-        ).text.split(" ")[0]
-    )
-    topic_count = int(
-        single_soup.select_one(
-            ".CourseModulesHeading_topicsNumber__PXMnR > p"
-        ).text.split(" ")[0]
-    )
-    duration_element = single_soup.select_one(
-        ".CourseModulesHeading_courseDuration__f_c3H > p"
-    )
-    duration = duration_element.text if duration_element else ""
+    if not single_soup:
+        module_count, topic_count, duration_element = None, None, ""
+    else:
+        module_count = int(
+            single_soup.select_one(
+                ".CourseModulesHeading_modulesNumber__GNdFP > p"
+            ).text.split(" ")[0]
+        )
+        topic_count = int(
+            single_soup.select_one(
+                ".CourseModulesHeading_topicsNumber__PXMnR > p"
+            ).text.split(" ")[0]
+        )
+        duration_element = single_soup.select_one(
+            ".CourseModulesHeading_courseDuration__f_c3H > p"
+        )
+        duration = duration_element.text if duration_element else ""
 
     return Course(
         name=name,
