@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from bs4 import BeautifulSoup, Tag
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 
 URL = "https://mate.academy/"
@@ -37,13 +37,12 @@ def get_driver() -> webdriver:
     options = Options()
     options.add_argument("--headless")
     driver = webdriver.Chrome(service=service, options=options)
-    driver.get(URL)
-
     return driver
 
 
 def get_all_courses() -> list[Course]:
     driver = get_driver()
+    driver.get(URL)
     soup = BeautifulSoup(driver.page_source, "html.parser")
     full_time_soup = soup.select(
         "[id=full-time] .CourseCard_cardContainer__7_4lK"
