@@ -21,12 +21,14 @@ class Course:
 
 
 def get_single_course(name: str, description: str) -> Course:
-    type_ = CourseType.PART_TIME if "part" in name else CourseType.FULL_TIME
+    course_type = (
+        CourseType.PART_TIME if "part" in name else CourseType.FULL_TIME
+    )
 
     return Course(
         name=name.split("-")[0],
         short_description=description,
-        course_type=type_
+        course_type=course_type
     )
 
 
@@ -49,11 +51,10 @@ def get_list_page_course(soup: BeautifulSoup, page_url: str) -> list[urljoin]:
 
 
 def get_all_courses() -> list[Course]:
-    page_url = BASE_URL
-    page = requests.get(page_url).content
+    page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
 
-    page_links = get_list_page_course(soup, page_url)
+    page_links = get_list_page_course(soup, BASE_URL)
     list_parse_of_courses = generate_parse_pages(page_links)
 
     return list_parse_of_courses
