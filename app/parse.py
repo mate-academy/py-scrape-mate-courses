@@ -62,7 +62,7 @@ def get_all_courses() -> list[Course]:
     return courses
 
 
-def write_courses_to_csv(courses: [Course], output_csv_path: str) -> None:
+def write_courses_to_csv(courses: list[Course], output_csv_path: str) -> None:
     with open(output_csv_path, "w", encoding="utf-8", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(COURSE_FIELDS)
