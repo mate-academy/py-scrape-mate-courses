@@ -40,8 +40,14 @@ def get_all_courses() -> list[Course]:
     soup = BeautifulSoup(page, "html.parser")
 
     course_types = [
-        ("#full-time section.CourseCard_cardContainer__7_4lK", CourseType.FULL_TIME),
-        ("#part-time section.CourseCard_cardContainer__7_4lK", CourseType.PART_TIME)
+        (
+            "#full-time section.CourseCard_cardContainer__7_4lK",
+            CourseType.FULL_TIME
+        ),
+        (
+            "#part-time section.CourseCard_cardContainer__7_4lK",
+            CourseType.PART_TIME
+        )
     ]
 
     for course_selector, course_type in course_types:
