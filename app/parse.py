@@ -3,11 +3,9 @@ from enum import Enum
 from urllib.parse import urljoin
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet
 
 BASE_URL = "https://mate.academy"
-
-OUTPUT_CSV_PATH = "courses.csv"
 
 
 class CourseType(Enum):
@@ -65,7 +63,7 @@ def get_course(soup: BeautifulSoup) -> Course:
     )
 
 
-def get_courses_soups_list() -> BeautifulSoup:
+def get_courses_soups_list() -> [ResultSet]:
     page = requests.get(BASE_URL).content
     page_soup = BeautifulSoup(page, "html.parser")
 
@@ -82,8 +80,3 @@ def get_all_courses() -> list[Course]:
         result.append(get_course(soup))
 
     return result
-
-
-if __name__ == '__main__':
-    course_dict = get_all_courses()
-    print(course_dict)
