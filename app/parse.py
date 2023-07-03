@@ -39,23 +39,16 @@ def get_all_courses() -> list[Course]:
     page = requests.get(BASE_URL).content
     soup = BeautifulSoup(page, "html.parser")
 
-    full_time_courses = soup.select(
-        "#full-time section.CourseCard_cardContainer__7_4lK"
-    )
+    course_types = [
+        ("#full-time section.CourseCard_cardContainer__7_4lK", CourseType.FULL_TIME),
+        ("#part-time section.CourseCard_cardContainer__7_4lK", CourseType.PART_TIME)
+    ]
 
-    part_time_courses = soup.select(
-        "#part-time section.CourseCard_cardContainer__7_4lK"
-    )
-
-    courses.extend([
-        get_single_course(course_soup, CourseType.FULL_TIME)
-        for course_soup in full_time_courses
-    ])
-
-    courses.extend([
-        get_single_course(course_soup, CourseType.PART_TIME)
-        for course_soup in part_time_courses
-    ])
+    for course_selector, course_type in course_types:
+        courses.extend([
+            get_single_course(course_soup, course_type)
+            for course_soup in soup.select(course_selector)
+        ])
     return courses
 
 
