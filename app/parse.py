@@ -54,7 +54,8 @@ def get_course(soup: BeautifulSoup) -> Course:
     return Course(
         name=name,
         short_description=soup.select_one(
-            "p.typography_landingMainText__Ux18x.CourseCard_courseDescription__Unsqj"
+            "p.typography_landingMainText__Ux18x."
+            "CourseCard_courseDescription__Unsqj"
         ).text,
         course_type=course_type,
         modules=info[0],
