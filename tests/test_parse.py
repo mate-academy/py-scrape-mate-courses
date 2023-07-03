@@ -1,4 +1,4 @@
-from app.parse import get_all_courses, CourseType
+from app.parse import Course, CourseType
 
 
 FOR_SURE_THIS_COURSES = [
@@ -9,7 +9,7 @@ FOR_SURE_THIS_COURSES = [
 
 
 def test_get_all_courses():
-    all_courses = get_all_courses()
+    all_courses = Course.get_all_courses(Course)
 
     for course_type in CourseType:
         course_names = [
