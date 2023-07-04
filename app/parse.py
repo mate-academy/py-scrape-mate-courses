@@ -46,10 +46,11 @@ def get_course(soup: BeautifulSoup) -> Course:
     detail_url = soup.select_one(".mb-16")["href"]
     info = get_detail_info_soup(detail_url=detail_url)
 
-    if name.endswith("flex"):
-        course_type = CourseType.PART_TIME
-    else:
-        course_type = CourseType.FULL_TIME
+    course_type = (
+        CourseType.PART_TIME
+        if name.endswith("flex")
+        else CourseType.FULL_TIME
+    )
 
     return Course(
         name=name,
@@ -64,7 +65,7 @@ def get_course(soup: BeautifulSoup) -> Course:
     )
 
 
-def get_courses_soups_list() -> [ResultSet]:
+def get_courses_soups_list() -> ResultSet:
     page = requests.get(BASE_URL).content
     page_soup = BeautifulSoup(page, "html.parser")
 
@@ -75,9 +76,7 @@ def get_courses_soups_list() -> [ResultSet]:
 
 def get_all_courses() -> list[Course]:
     all_courses_soup = get_courses_soups_list()
-    result = []
 
-    for soup in all_courses_soup:
-        result.append(get_course(soup))
+    result = [get_course(soup) for soup in all_courses_soup]
 
     return result
