@@ -22,34 +22,27 @@ class Course:
 
 def extract_additional_info(details_url: str) -> Tuple[str, str, str]:
     details_response = requests.get(details_url)
-    details_soup = BeautifulSoup(details_response.content, "html.parser")
+    soup = BeautifulSoup(details_response.content, "html.parser")
 
-    module_div = details_soup.find(
+    module_count = soup.find(
         "div", class_="CourseModulesHeading_modulesNumber__GNdFP"
-    )
-    module_count = module_div.find("p").text.split()[0] if module_div else ""
+    ).find("p").text
 
-    topic_div = details_soup.find(
+    topic_count = soup.find(
         "div", class_="CourseModulesHeading_topicsNumber__PXMnR"
-    )
-    topic_count = topic_div.find("p").text if topic_div else ""
+    ).find("p").text
 
-    duration_div = details_soup.find(
+    duration = soup.find(
         "div", class_="CourseModulesHeading_courseDuration__f_c3H"
-    )
-    duration = duration_div.find("p").text if duration_div else ""
+    ).find("p").text
 
     return module_count, topic_count, duration
 
 
-def get_all_courses(html_content: str = None) -> List[Course]:
+def get_all_courses() -> List[Course]:
     base_url = "https://mate.academy"
-
-    if html_content is None:
-        response = requests.get(base_url)
-        html_content = response.content
-
-    soup = BeautifulSoup(html_content, "html.parser")
+    response = requests.get(base_url)
+    soup = BeautifulSoup(response.content, "html.parser")
     course_elements = soup.find_all(
         "section", class_="CourseCard_cardContainer__7_4lK"
     )
@@ -68,20 +61,18 @@ def get_all_courses(html_content: str = None) -> List[Course]:
             + link_to_detail_info_element[0]["href"]
         )
 
-        short_description_element = course_element.find(
+        short_description = course_element.find(
             "p",
             class_=(
                 "typography_landingMainText__Ux18x "
                 "CourseCard_courseDescription__Unsqj"
             )
+        ).text.strip()
+
+        course_type = (
+            CourseType.PART_TIME if "parttime" in link
+            else CourseType.FULL_TIME
         )
-        short_description = short_description_element.text.strip()
-
-        if "parttime" in link:
-            course_type = CourseType.PART_TIME
-        else:
-            course_type = CourseType.FULL_TIME
-
         course = Course(
             name_element, short_description, course_type,
             *extract_additional_info(link)
