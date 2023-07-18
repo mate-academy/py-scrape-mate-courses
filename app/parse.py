@@ -28,7 +28,7 @@ def get_one_course(course: BeautifulSoup, course_type: str) -> Course:
         course_type=CourseType(course_type))
 
 
-def get_courses(page_soup: BeautifulSoup, course_type: str) -> BeautifulSoup:
+def get_courses(page_soup: BeautifulSoup, course_type: str) -> list[Course]:
     courses = page_soup.select(
         f"#{course_type} .CourseCard_cardContainer__7_4lK"
     )
