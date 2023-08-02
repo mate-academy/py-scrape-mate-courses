@@ -50,12 +50,3 @@ def get_all_courses() -> list[Course]:
     )
 
     return all_courses
-
-
-if __name__ == "__main__":
-    courses = get_all_courses()
-    for course in courses:
-        print(f"Name: {course.name}")
-        print(f"Type: {course.course_type.value}")
-        print(f"Description: {course.short_description}")
-        print("--------")
