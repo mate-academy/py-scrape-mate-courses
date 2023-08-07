@@ -3,7 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 from dataclasses import dataclass
 from enum import Enum
-from pprint import pprint
 
 
 BASE_URL = "https://mate.academy/en"
@@ -46,13 +45,4 @@ def get_all_courses() -> list[Course]:
 
     courses = base_soup.select(".CourseCard_cardContainer__7_4lK")
 
-    courses_cou = [
-        get_single_course(course) for course in courses
-    ]
-    pprint(courses_cou)
-
-    return courses_cou
-
-
-if __name__ == "__main__":
-    get_all_courses()
+    return [get_single_course(course) for course in courses]
