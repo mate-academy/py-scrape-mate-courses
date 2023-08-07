@@ -29,12 +29,12 @@ def get_course_additional_details(course_detail_url: str) -> dict:
     course_detail_page_soup = BeautifulSoup(page, "html.parser")
 
     course_additional_details = dict(
-        modules=course_detail_page_soup.select_one(
+        modules=int(course_detail_page_soup.select_one(
             ".CourseModulesHeading_modulesNumber__GNdFP"
-        ).text.split()[0],
-        topics=course_detail_page_soup.select_one(
+        ).text.split()[0]),
+        topics=int(course_detail_page_soup.select_one(
             ".CourseModulesHeading_topicsNumber__PXMnR"
-        ).text.split()[0],
+        ).text.split()[0]),
         duration=course_detail_page_soup.select_one(
             ".CourseModulesHeading_courseDuration__f_c3H"
         ).text,
