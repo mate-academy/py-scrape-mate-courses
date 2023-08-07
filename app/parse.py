@@ -1,5 +1,12 @@
+import requests
+
+from bs4 import BeautifulSoup
 from dataclasses import dataclass
 from enum import Enum
+from pprint import pprint
+
+
+BASE_URL = "https://mate.academy/en"
 
 
 class CourseType(Enum):
@@ -14,5 +21,38 @@ class Course:
     course_type: CourseType
 
 
+def get_single_course(course: BeautifulSoup) -> Course:
+    course_type_in_url = course.select_one("a.mb-16")["href"].split("-")[-1]
+    course_details = dict(
+        name=course.select_one(".typography_landingH3__vTjok").text,
+        short_description=course.select_one(
+            "p.CourseCard_courseDescription__Unsqj"
+        ).text,
+        course_type=(
+            CourseType.PART_TIME
+            if course_type_in_url == "parttime"
+            else CourseType.FULL_TIME
+        )
+    )
+
+    return Course(
+        **course_details
+    )
+
+
 def get_all_courses() -> list[Course]:
-    pass
+    page_content = requests.get(BASE_URL).content
+    base_soup = BeautifulSoup(page_content, "html.parser")
+
+    courses = base_soup.select(".CourseCard_cardContainer__7_4lK")
+
+    courses_cou = [
+        get_single_course(course) for course in courses
+    ]
+    pprint(courses_cou)
+
+    return courses_cou
+
+
+if __name__ == "__main__":
+    get_all_courses()
