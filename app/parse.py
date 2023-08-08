@@ -38,7 +38,7 @@ class Course:
     duration: str
 
 
-QUOTE_FIELDS = [field.name for field in fields(Course)]
+COURSE_FIELDS = [field.name for field in fields(Course)]
 
 
 def get_course_additional_details(course_detail_url: str) -> dict:
@@ -112,13 +112,13 @@ def get_all_courses() -> list[Course]:
 
 
 def write_courses_data_to_csv(
-    quotes: list[Course],
+    courses: list[Course],
     output_path: str = OUTPUT_CSV_PATH,
 ) -> None:
     with open(output_path, "w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow(QUOTE_FIELDS)
-        writer.writerows([astuple(quote) for quote in quotes])
+        writer.writerow(COURSE_FIELDS)
+        writer.writerows([astuple(course) for course in courses])
 
 
 if __name__ == "__main__":
