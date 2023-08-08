@@ -1,14 +1,16 @@
+import csv
 import logging
 import requests
 import sys
 
 from bs4 import BeautifulSoup, Tag
-from dataclasses import dataclass
+from dataclasses import dataclass, astuple, fields
 from enum import Enum
 from urllib.parse import urljoin
 
 
 BASE_URL = "https://mate.academy/en"
+OUTPUT_CSV_PATH = "courses_data.csv"
 
 
 logging.basicConfig(
@@ -34,6 +36,9 @@ class Course:
     modules: int
     topics: int
     duration: str
+
+
+QUOTE_FIELDS = [field.name for field in fields(Course)]
 
 
 def get_course_additional_details(course_detail_url: str) -> dict:
@@ -106,5 +111,16 @@ def get_all_courses() -> list[Course]:
     return parsed_courses
 
 
+def write_courses_data_to_csv(
+    quotes: list[Course],
+    output_path: str = OUTPUT_CSV_PATH,
+) -> None:
+    with open(output_path, "w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(QUOTE_FIELDS)
+        writer.writerows([astuple(quote) for quote in quotes])
+
+
 if __name__ == "__main__":
-    get_all_courses()
+    courses_data = get_all_courses()
+    write_courses_data_to_csv(courses_data)
