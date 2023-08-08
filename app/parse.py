@@ -1,12 +1,24 @@
+import logging
 import requests
+import sys
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass
 from enum import Enum
 from urllib.parse import urljoin
 
 
 BASE_URL = "https://mate.academy/en"
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(levelname)8s]: %(message)s",
+    handlers=[
+        logging.FileHandler("parser.log"),
+        logging.StreamHandler(sys.stdout),
+    ],
+)
 
 
 class CourseType(Enum):
@@ -25,17 +37,19 @@ class Course:
 
 
 def get_course_additional_details(course_detail_url: str) -> dict:
-    page = requests.get(urljoin(BASE_URL, course_detail_url)).content
-    course_detail_page_soup = BeautifulSoup(page, "html.parser")
+    course_detail_page = requests.get(
+        urljoin(BASE_URL, course_detail_url)
+    ).content
+    course_detail_soup = BeautifulSoup(course_detail_page, "html.parser")
 
     course_additional_details = dict(
-        modules=int(course_detail_page_soup.select_one(
+        modules=int(course_detail_soup.select_one(
             ".CourseModulesHeading_modulesNumber__GNdFP"
         ).text.split()[0]),
-        topics=int(course_detail_page_soup.select_one(
+        topics=int(course_detail_soup.select_one(
             ".CourseModulesHeading_topicsNumber__PXMnR"
         ).text.split()[0]),
-        duration=course_detail_page_soup.select_one(
+        duration=course_detail_soup.select_one(
             ".CourseModulesHeading_courseDuration__f_c3H"
         ).text,
     )
@@ -43,12 +57,16 @@ def get_course_additional_details(course_detail_url: str) -> dict:
     return course_additional_details
 
 
-def get_single_course_full_details(course: BeautifulSoup) -> Course:
+def get_single_course_full_details(course: Tag) -> Course:
+
     course_detail_url = course.select_one(".mb-16")["href"]
     course_type_in_url = course.select_one("a.mb-16")["href"].split("-")[-1]
 
+    course_name = course.select_one(".typography_landingH3__vTjok").text
+    logging.info(f"Parsing course: {course_name}")
+
     course_base_details = dict(
-        name=course.select_one(".typography_landingH3__vTjok").text,
+        name=course_name,
         short_description=course.select_one(
             "p.CourseCard_courseDescription__Unsqj"
         ).text,
@@ -69,9 +87,24 @@ def get_single_course_full_details(course: BeautifulSoup) -> Course:
 
 
 def get_all_courses() -> list[Course]:
+    logging.info("Start parsing courses\n________________________________\n")
+
     page_content = requests.get(BASE_URL).content
     base_soup = BeautifulSoup(page_content, "html.parser")
-
     courses = base_soup.select(".CourseCard_cardContainer__7_4lK")
 
-    return [get_single_course_full_details(course) for course in courses]
+    parsed_courses = [
+        get_single_course_full_details(course) for course in courses
+    ]
+
+    logging.info(
+        "\n________________________________\n"
+        "Parsing is finished successfully"
+        "\n________________________________\n"
+    )
+
+    return parsed_courses
+
+
+if __name__ == "__main__":
+    get_all_courses()
