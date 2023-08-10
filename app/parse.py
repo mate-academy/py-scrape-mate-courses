@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import csv
 import logging
 import requests
 import sys
+import time
 
 from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass, astuple, fields
 from enum import Enum
-from typing import Self
 from urllib.parse import urljoin
 
 
@@ -39,7 +41,9 @@ class Course:
     duration: str
 
     @staticmethod
-    def get_course_additional_details(course_detail_url: str) -> dict:
+    def get_course_additional_details(
+            course_detail_url: str
+    ) -> dict[str: int | str]:
         course_detail_page = requests.get(
             urljoin(BASE_URL, course_detail_url)
         ).content
@@ -60,7 +64,7 @@ class Course:
         return course_additional_details
 
     @classmethod
-    def get_single_course_full_details(cls, course: Tag) -> Self:
+    def get_single_course_full_details(cls, course: Tag) -> Course:
         course_detail_url = course.select_one(".mb-16")["href"]
         course_type_in_url = (
             course.select_one("a.mb-16")["href"].split("-")[-1]
