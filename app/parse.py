@@ -19,9 +19,6 @@ class Course:
     course_type: CourseType
 
 
-QUOTE_FIELDS = [field.name for field in fields(Course)]
-
-
 def parse_single_course(course_container: Tag) -> Course:
     name = course_container.select_one(
         "a span.typography_landingH3__vTjok"
