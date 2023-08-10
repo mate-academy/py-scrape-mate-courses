@@ -1,4 +1,4 @@
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from enum import Enum
 from bs4 import BeautifulSoup, Tag
 import requests
