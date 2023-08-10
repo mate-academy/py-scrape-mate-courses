@@ -2,6 +2,7 @@ import csv
 import logging
 import requests
 import sys
+import time
 
 from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass, astuple, fields
@@ -118,8 +119,3 @@ def write_courses_data_to_csv(
         writer = csv.writer(file)
         writer.writerow(field.name for field in fields(Course))
         writer.writerows([astuple(course) for course in courses])
-
-
-if __name__ == "__main__":
-    courses_data = get_all_courses()
-    write_courses_data_to_csv(courses_data)
