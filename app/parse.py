@@ -4,7 +4,6 @@ import csv
 import logging
 import requests
 import sys
-import time
 
 from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass, astuple, fields
