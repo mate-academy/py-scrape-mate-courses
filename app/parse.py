@@ -19,7 +19,9 @@ class Course:
     course_type: CourseType
 
 
-def parse_single_course(course_soup: BeautifulSoup, course_type: str) -> Course:
+def parse_single_course(
+        course_soup: BeautifulSoup, course_type: str
+) -> Course:
     return Course(
         name=course_soup.select_one("section > a > span").text.split()[1],
         short_description=course_soup.select_one("section > div > p").text,
@@ -27,10 +29,14 @@ def parse_single_course(course_soup: BeautifulSoup, course_type: str) -> Course:
     )
 
 
-def get_courses_by_course_type(page_soup: BeautifulSoup, course_type: str) -> list[Course]:
+def get_courses_by_course_type(
+    page_soup: BeautifulSoup, course_type: str
+) -> list[Course]:
     return [
         parse_single_course(course_soup=course, course_type=course_type)
-        for course in page_soup.select_one(f"div#{course_type} > .large-offset-1")
+        for course in page_soup.select_one(
+            f"div#{course_type} > .large-offset-1"
+        )
     ]
 
 
@@ -38,7 +44,10 @@ def get_all_courses() -> list[Course]:
     response = requests.get(BASE_URL).content
     soup = BeautifulSoup(response, "html.parser")
 
-    return get_courses_by_course_type(soup, "part-time") + get_courses_by_course_type(soup, "full-time")
+    return (
+        get_courses_by_course_type(soup, "part-time")
+        + get_courses_by_course_type(soup, "full-time")
+    )
 
 
 if __name__ == "__main__":
