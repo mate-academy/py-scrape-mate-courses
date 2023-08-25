@@ -38,8 +38,8 @@ class CoursesParser:
         response = requests.get(CoursesParser.URL).content
         soup = BeautifulSoup(response, "html.parser")
 
-        print(self.__parse_data(soup, "#full-time"))
-        print(self.__parse_data(soup, "#part-time"))
+        self.__parse_data(soup, "#full-time")
+        self.__parse_data(soup, "#part-time")
 
         return self.courses
 
