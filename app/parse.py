@@ -47,10 +47,16 @@ def get_detail_course_info(course_link: str) -> dict:
 
 
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
-    additional_info = get_detail_course_info(course_soup.select_one("a.CourseCard_button__HTQvE")["href"])
+    additional_info = get_detail_course_info(
+        course_soup.select_one("a.CourseCard_button__HTQvE")["href"]
+    )
     return Course(
-        name=course_soup.select_one("a > span.typography_landingH3__vTjok").text,
-        short_description=course_soup.select_one(".typography_landingMainText__Ux18x").text,
+        name=course_soup.select_one(
+            "a > span.typography_landingH3__vTjok"
+        ).text,
+        short_description=course_soup.select_one(
+            ".typography_landingMainText__Ux18x"
+        ).text,
         course_type=(
             CourseType.PART_TIME
             if course_soup.select(".Button_black__kAQvx")
