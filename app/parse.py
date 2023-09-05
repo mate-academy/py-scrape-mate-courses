@@ -1,18 +1,16 @@
-from dataclasses import dataclass
-from enum import Enum
+from dataclasses import fields
+
+from app.courses import get_all_courses, Course
+from app.utils import write_courses_to_csv
 
 
-class CourseType(Enum):
-    FULL_TIME = "full-time"
-    PART_TIME = "part-time"
+COURSE_FIELDS = [course_field.name for course_field in fields(Course)]
 
 
-@dataclass
-class Course:
-    name: str
-    short_description: str
-    course_type: CourseType
+def main(courses_csv_path: str):
+    courses = get_all_courses()
+    write_courses_to_csv(courses, courses_csv_path, COURSE_FIELDS)
 
 
-def get_all_courses() -> list[Course]:
-    pass
+if __name__ == "__main__":
+    main("courses.csv")
