@@ -10,7 +10,7 @@ BASE_URL = "https://mate.academy/"
 driver_path = "/usr/local/bin/chromedriver"
 chrome_options = webdriver.ChromeOptions()
 chrome_execuable = webdriver.ChromeService(executable_path=driver_path)
-chrome_options.add_argument('--headless')
+chrome_options.add_argument("--headless")
 driver = webdriver.Chrome(service=chrome_execuable, options=chrome_options)
 
 driver.get(BASE_URL)
