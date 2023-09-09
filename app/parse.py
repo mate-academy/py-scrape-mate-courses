@@ -49,7 +49,9 @@ class Course:
 
     @staticmethod
     def get_description(soup: BeautifulSoup) -> str:
-        description = soup.select_one("p.typography_landingMainText__Ux18x.mb-32")
+        description = soup.select_one(
+            "p.typography_landingMainText__Ux18x.mb-32"
+        )
         if description is None:
             return ""
         return description.text
