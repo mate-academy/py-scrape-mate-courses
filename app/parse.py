@@ -1,26 +1,13 @@
-from dataclasses import dataclass
-from enum import Enum
-
 import requests
 from bs4 import BeautifulSoup
+
+from course import Course, CourseType
 
 
 URL = "https://mate.academy/"
 
 
-class CourseType(Enum):
-    FULL_TIME = "full-time"
-    PART_TIME = "part-time"
-
-
-@dataclass
-class Course:
-    name: str
-    short_description: str
-    course_type: CourseType
-
-
-def parse_page() -> list[dict]:
+def parse() -> list[dict]:
     page_content = requests.get(URL).content
     page_soup = BeautifulSoup(page_content, "html.parser")
 
@@ -51,14 +38,10 @@ def parse_page() -> list[dict]:
 
 
 def get_all_courses() -> list[Course]:
-    data_list = parse_page()
+    data_list = parse()
 
     return [
-        Course(
-            name=data["name"],
-            short_description=data["short_description"],
-            course_type=data["course_type"]
-        ) for data in data_list
+        Course.from_dict(data) for data in data_list
     ]
 
 
