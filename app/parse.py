@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 import requests
-from bs4 import BeautifulSoup
-
+from bs4 import BeautifulSoup, Tag
 
 URL = "https://mate.academy/"
 
@@ -19,21 +18,31 @@ class Course:
     course_type: CourseType
 
 
-def parse_course(course_soup: BeautifulSoup) -> Course:
+def parse_single_course(course_soup: Tag) -> Course:
 
-    course_name = course_soup.select_one(".typography_landingH3__vTjok").text
+    name = course_soup.select_one(
+        "a span.typography_landingH3__vTjok"
+    ).text.strip()
+
     short_description = course_soup.select_one(
-        ".CourseCard_courseDescription__Unsqj"
-    ).text
+        "p.typography_landingMainText__Ux18x"
+    ).text.strip()
+
     course_type = (
-        CourseType.PART_TIME if "Вечірній" in course_name
+        CourseType.PART_TIME
+        if "flex" in name
         else CourseType.FULL_TIME
     )
-    return Course(course_name, short_description, course_type)
+
+    return Course(
+        name=name,
+        short_description=short_description,
+        course_type=course_type
+    )
 
 
 def get_all_courses() -> list[Course]:
-    response = requests.get(URL).content
-    soup = BeautifulSoup(response, "html.parser")
+    page = requests.get(URL).content
+    soup = BeautifulSoup(page, "html.parser")
     courses = soup.select(".CourseCard_cardContainer__7_4lK")
-    return [parse_course(course) for course in courses]
+    return [parse_single_course(course_soup) for course_soup in courses]
