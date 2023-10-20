@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 from urllib.parse import urljoin
 
 import requests
@@ -98,7 +99,9 @@ def check_part_time(
         return part_time
 
 
-def parse_single_course(course_soup: BeautifulSoup) -> tuple[Course, Course]:
+def parse_single_course(
+        course_soup: BeautifulSoup
+) -> tuple[Optional[Course], Optional[Course]]:
     name = course_soup.select_one(
         ".typography_landingH3__vTjok.ProfessionCard_title__fTqBr.mb-12"
     ).text
@@ -125,8 +128,9 @@ def get_all_courses() -> list[Course]:
     courses = soup.select(".ProfessionCard_cardWrapper__DnW_d")
 
     return [
-        each for course in courses for each
-        in parse_single_course(course) if each
+        each_course
+        for course_type in courses
+        for each_course in parse_single_course(course_type) if each_course
     ]
 
 
