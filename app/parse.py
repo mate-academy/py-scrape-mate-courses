@@ -135,6 +135,5 @@ def get_all_courses() -> list[Course]:
 
 
 if __name__ == "__main__":
-    result = get_all_courses()
-    for i in result:
-        print(i)
+    get_all_courses()
+
