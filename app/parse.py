@@ -136,4 +136,3 @@ def get_all_courses() -> list[Course]:
 
 if __name__ == "__main__":
     get_all_courses()
-
