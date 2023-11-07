@@ -1,6 +1,7 @@
 import csv
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -17,34 +18,71 @@ class CourseType(Enum):
 class Course:
     name: str
     short_description: str
-    course_type: list[CourseType] | CourseType
+    course_type: CourseType
 
 
-def parse_single_course_page(course_soup: BeautifulSoup) -> Course:
+def check_full_time(
+        name: str,
+        short_description: str,
+        course_soup: BeautifulSoup
+) -> Course | None:
+    element = course_soup.find(
+        "a",
+        {"data-qa": "fulltime-course-more-details-button"}
+    )
+
+    if element:
+        full_time = Course(
+            name=name,
+            short_description=short_description,
+            course_type=CourseType.FULL_TIME
+        )
+        return full_time
+
+
+def check_part_time(
+        name: str,
+        short_description: str,
+        course_soup: BeautifulSoup
+) -> Course | None:
+    element = course_soup.find(
+        "a",
+        {"data-qa": "parttime-course-more-details-button"}
+    )
+
+    if element:
+        part_time = Course(
+            name=name,
+            short_description=short_description,
+            course_type=CourseType.PART_TIME
+        )
+        return part_time
+
+
+def parse_single_course_page(
+        course_soup: BeautifulSoup
+) -> tuple[Optional[Course], Optional[Course]]:
     name = course_soup.find(
         "h3",
         class_="typography_landingH3__vTjok ProfessionCard_title__Zq5ZY mb-12"
-    ).text.split(" ")[0]
-    short_description = course_soup.find(
-        "p", class_="typography_landingTextMain__Rc8BD mb-32"
     ).text
-    course_type_elements = course_soup.find_all(
-        "span", class_="ButtonBody_buttonText__FMZEg"
-    )
-    course_type_texts = [c.text for c in course_type_elements]
+    short_description = course_soup.find(
+        "p",
+        class_="typography_landingTextMain__Rc8BD mb-32"
+    ).text
 
-    course_types = []
-    for course_type_text in course_type_texts:
-        if course_type_text == "Власний темп":
-            course_types.append(CourseType.PART_TIME)
-        elif course_type_text == "Повний день":
-            course_types.append(CourseType.FULL_TIME)
-
-    return Course(
+    part_time = check_part_time(
         name=name,
         short_description=short_description,
-        course_type=course_types,
+        course_soup=course_soup
     )
+    full_time = check_full_time(
+        name=name,
+        short_description=short_description,
+        course_soup=course_soup
+    )
+
+    return part_time, full_time
 
 
 def get_all_courses() -> list[Course]:
@@ -53,7 +91,12 @@ def get_all_courses() -> list[Course]:
 
     courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
 
-    return [parse_single_course_page(course) for course in courses]
+    return [
+        course
+        for course_type in courses
+        for course in parse_single_course_page(course_type)
+        if course
+    ]
 
 
 def write_courses_to_csv(courses: list[Course], output_csv_path: str) -> None:
