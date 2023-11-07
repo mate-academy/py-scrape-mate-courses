@@ -53,7 +53,6 @@ def get_all_courses() -> list[Course]:
         courses = parse_single_course_with_both_course_type(course_card)
         all_courses.extend(courses)
 
-    print(all_courses)
     return all_courses
 
 
