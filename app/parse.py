@@ -40,7 +40,8 @@ def parse_single_course(course_soup: BeautifulSoup) -> Course:
 
     return Course(
         name=course_soup.find(
-            "h3", class_="typography_landingH3__vTjok ProfessionCard_title__Zq5ZY mb-12"
+            "h3", class_="typography_landingH3__vTjok "
+                         "ProfessionCard_title__Zq5ZY mb-12"
         ).text,
         short_description=course_soup.find(
             "p", class_="typography_landingTextMain__Rc8BD mb-32"
