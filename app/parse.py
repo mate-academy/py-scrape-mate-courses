@@ -21,10 +21,16 @@ class Course:
 
 def create_course(card: bs4.element) -> list[Course]:
     courses = []
-    part_time = card.find("a", {"data-qa": "parttime-course-more-details-button"})
-    full_time = card.find("a", {"data-qa": "fulltime-course-more-details-button"})
+    part_time = card.find(
+        "a", {"data-qa": "parttime-course-more-details-button"}
+    )
+    full_time = card.find(
+        "a", {"data-qa": "fulltime-course-more-details-button"}
+    )
     name = card.find("h3").text
-    short_description = card.find("p", {"class": "typography_landingTextMain__Rc8BD mb-32"}).text
+    short_description = card.find(
+        "p", {"class": "typography_landingTextMain__Rc8BD mb-32"}
+    ).text
 
     if part_time:
         course_type = CourseType.PART_TIME
@@ -43,7 +49,9 @@ def get_all_courses() -> list[Course]:
     courses = []
     response = requests.get(URL)
     soup = bs4.BeautifulSoup(response.content, "html.parser")
-    course_cards = soup.findAll("div", {"class": "ProfessionCard_cardWrapper__JQBNJ"})
+    course_cards = soup.findAll(
+        "div", {"class": "ProfessionCard_cardWrapper__JQBNJ"}
+    )
 
     for card in course_cards:
         new_courses = create_course(card)
