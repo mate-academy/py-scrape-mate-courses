@@ -39,16 +39,24 @@ def parse_page_of_course(detail_link: str) -> list:
     page = requests.get(HOME_URL + detail_link).content
     beautiful_soup = BeautifulSoup(page, "html.parser")
 
-    modules = beautiful_soup.select_one(".CourseModulesHeading_modulesNumber__GNdFP").text
-    topics = beautiful_soup.select_one(".CourseModulesHeading_topicsNumber__PXMnR").text
-    duration = beautiful_soup.select_one(".CourseModulesHeading_courseDuration__f_c3H").text
+    modules = beautiful_soup.select_one(
+        ".CourseModulesHeading_modulesNumber__GNdFP"
+    ).text
+    topics = beautiful_soup.select_one(
+        ".CourseModulesHeading_topicsNumber__PXMnR"
+    ).text
+    duration = beautiful_soup.select_one(
+        ".CourseModulesHeading_courseDuration__f_c3H"
+    ).text
 
     return [int(modules.split()[0]), int(topics.split()[0]), duration]
 
 
 def parse_course(soup: BeautifulSoup) -> list[Course]:
     name = soup.select_one(".ProfessionCard_title__Zq5ZY").text
-    short_description = soup.select_one(".typography_landingTextMain__Rc8BD.mb-32").text
+    short_description = soup.select_one(
+        ".typography_landingTextMain__Rc8BD.mb-32"
+    ).text
     detail_link = soup.select_one("a")["href"]
     modules, topics, duration = parse_page_of_course(detail_link)
     courses_list = [
