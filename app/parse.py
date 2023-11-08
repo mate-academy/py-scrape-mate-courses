@@ -62,6 +62,3 @@ def get_all_courses() -> list:
         all_courses.extend(single_course)
 
     return all_courses
-
-
-print(get_all_courses())
