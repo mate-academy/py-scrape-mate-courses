@@ -11,7 +11,6 @@ BASE_URL = "https://mate.academy/"
 class CourseType(Enum):
     FULL_TIME = "full-time"
     PART_TIME = "part-time"
-    BOTH = ["full-time", "part-time"]
 
 
 @dataclass
@@ -21,42 +20,33 @@ class Course:
     course_type: CourseType
 
 
-def parse_single_course(course_soup: BeautifulSoup) -> Course:
-    part_time_course = course_soup.find(
-        "a",
-        {"data-qa": "parttime-course-more-details-button"}
+def parse_single_course(course_card: BeautifulSoup) -> List[CourseType]:
+    course_types = course_card.select(
+        ".ProfessionCard_buttons__a0o60 > a[data-qa]"
     )
-    full_time_course = course_soup.find(
-        "a",
-        {"data-qa": "fulltime-course-more-details-button"}
-    )
-
-    if full_time_course and part_time_course:
-        course_type = CourseType.BOTH
-    elif full_time_course:
-        course_type = CourseType.FULL_TIME
-    elif part_time_course:
-        course_type = CourseType.PART_TIME
-
-    return Course(
-        name=course_soup.find(
-            "h3", class_="typography_landingH3__vTjok "
-                         "ProfessionCard_title__Zq5ZY mb-12"
-        ).text,
-        short_description=course_soup.find(
-            "p", class_="typography_landingTextMain__Rc8BD mb-32"
-        ).text,
-        course_type=course_type
-    )
+    return [
+        CourseType.FULL_TIME if "fulltime" in course_type["data-qa"]
+        else CourseType.PART_TIME
+        for course_type in course_types
+    ]
 
 
 def get_all_courses() -> List[Course]:
     page = requests.get(BASE_URL).content
     page_soup = BeautifulSoup(page, "html.parser")
+    courses_card_soup = page_soup.select(".ProfessionCard_cardWrapper__JQBNJ")
 
-    courses = page_soup.select(".ProfessionCard_cardWrapper__JQBNJ")
-    return [parse_single_course(course_soup) for course_soup in courses]
+    all_courses = []
+    for course_card in courses_card_soup:
+        name = course_card.find("h3", class_="mb-12").text
+        short_description = course_card.find("p", class_="mb-32").text
+        course_types = parse_single_course(course_card)
 
+        for course_type in course_types:
+            course = Course(
+                name=name,
+                short_description=short_description,
+                course_type=course_type)
+            all_courses.append(course)
 
-if __name__ == "__main__":
-    get_all_courses()
+    return all_courses
