@@ -72,7 +72,11 @@ def get_all_courses() -> list[Course]:
         part_time = course_soup.select_one(".Button_secondary__DNIuD")
 
         if full_time:
-            modules_count, topics_count, duration = parse_course_page(full_time["href"])
+            (
+                modules_count,
+                topics_count,
+                duration,
+            ) = parse_course_page(full_time["href"])
 
             courses.append(
                 create_course(
@@ -86,7 +90,11 @@ def get_all_courses() -> list[Course]:
             )
 
         if part_time:
-            modules_count, topics_count, duration = parse_course_page(part_time["href"])
+            (
+                modules_count,
+                topics_count,
+                duration,
+            ) = parse_course_page(part_time["href"])
 
             courses.append(
                 create_course(
