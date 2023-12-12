@@ -58,7 +58,6 @@ def get_all_courses() -> list[Course]:
         content, "html.parser"
     ).select(".ProfessionCard_cardWrapper__JQBNJ")
     courses = []
-    print(soup)
     for course_card in soup:
         courses.extend(parse_single_course_card(course_card))
     return courses
