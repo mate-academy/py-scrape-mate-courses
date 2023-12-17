@@ -1,6 +1,5 @@
-from dataclasses import dataclass, astuple
+from dataclasses import dataclass
 from enum import Enum
-import csv
 
 from bs4 import BeautifulSoup, Tag
 import requests
@@ -40,7 +39,9 @@ def get_single_course(course: Tag) -> [Course]:
     ]
 
 
-def get_all_courses(soup: BeautifulSoup) -> list[Course]:
+def get_all_courses() -> list[Course]:
+    page = requests.get(URL).content
+    soup = BeautifulSoup(page, "html.parser")
     courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     all_courses = []
     for course in courses:
@@ -48,18 +49,4 @@ def get_all_courses(soup: BeautifulSoup) -> list[Course]:
     return all_courses
 
 
-def to_csv(courses: list[Course]) -> None:
-    with open("couses.csv", "a") as fh:
-        writer = csv.writer(fh, delimiter=",")
-        writer.writerow(vars(courses[0]))
-        writer.writerows([astuple(course) for course in courses])
-
-
-def main() -> None:
-    page = requests.get(URL).content
-    soup = BeautifulSoup(page, "html.parser")
-    to_csv(get_all_courses(soup))
-
-
-if __name__ == "__main__":
-    main()
+get_all_courses()
