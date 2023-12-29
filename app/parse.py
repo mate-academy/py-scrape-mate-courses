@@ -33,11 +33,11 @@ def parse_single_course(soup: BeautifulSoup) -> [Course]:
         result.append(Course(
             name=soup.select_one(".ProfessionCard_cardWrapper__JQBNJ"
                                  " > a > h3").text,
-            short_description=soup.select_one(".ProfessionCard_cardWrapper__JQBNJ"
+            short_description=soup.select_one(".ProfessionCard_cardWrapper"
+                                              "__JQBNJ"
                                               " > .mb-32").text,
             course_type=CourseType.FULL_TIME
-            )
-        )
+        ))
 
     return result
 
