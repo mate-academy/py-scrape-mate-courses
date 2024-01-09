@@ -17,6 +17,9 @@ class Course:
     name: str
     short_description: str
     course_type: CourseType
+    modules: int
+    topics: int
+    duration: int
 
 
 BASE_URL = "https://mate.academy/"
@@ -24,7 +27,7 @@ BASE_URL = "https://mate.academy/"
 logging.basicConfig(
     level=logging.DEBUG,
     format="[%(levelname)8s]: %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)]
+    handlers=[logging.StreamHandler(sys.stdout)],
 )
 
 
@@ -43,19 +46,49 @@ def parse_single_course(course_soup: BeautifulSoup) -> list[Course]:
         "[data-qa='parttime-course-more-details-button']"
     )
 
+    course_link = BASE_URL + course_soup.select_one("a")["href"]
+    page = requests.get(course_link).content
+    page_soup = BeautifulSoup(page, "html.parser")
+
+    modules = int(
+        page_soup.select_one(
+            ".CourseModulesHeading_modulesNumber__GNdFP p"
+        ).text.split(" ")[0]
+    )
+    topics = int(
+        page_soup.select_one(
+            ".CourseModulesHeading_topicsNumber__PXMnR p"
+        ).text.split(" ")[0]
+    )
+    duration = int(
+        page_soup.select_one(
+            ".CourseModulesHeading_courseDuration__f_c3H p"
+        ).text.split(" ")[0]
+    )
+
     if full_time_course_type:
-        courses.append(Course(
-            name=name,
-            short_description=short_description,
-            course_type=CourseType.FULL_TIME
-        ))
+        courses.append(
+            Course(
+                name=name,
+                short_description=short_description,
+                course_type=CourseType.FULL_TIME,
+                modules=modules,
+                topics=topics,
+                duration=duration,
+            )
+        )
 
     if part_time_course_type:
-        courses.append(Course(
-            name=name,
-            short_description=short_description,
-            course_type=CourseType.PART_TIME
-        ))
+        courses.append(
+            Course(
+                name=name,
+                short_description=short_description,
+                course_type=CourseType.PART_TIME,
+                modules=modules,
+                topics=topics,
+                duration=duration,
+            )
+        )
 
     return courses
 
