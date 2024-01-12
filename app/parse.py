@@ -57,18 +57,18 @@ def get_all_courses() -> list[Course]:
         )
 
         for course_type in course_types:
-            if course_type.get_text() == "Повний день":
-                courses_list.append(Course.create_single_course(
-                    course_name,
-                    short_description,
-                    CourseType.FULL_TIME
-                ))
-            elif course_type.get_text() == "Власний темп":
-                courses_list.append(Course.create_single_course(
-                    course_name,
-                    short_description,
-                    CourseType.PART_TIME
-                ))
+            course_type_text = course_type.get_text()
+            course_type_enum = (
+                CourseType.FULL_TIME
+                if course_type_text == "Повний день"
+                else CourseType.PART_TIME
+            )
+
+            courses_list.append(Course.create_single_course(
+                course_name,
+                short_description,
+                course_type_enum
+            ))
 
     return courses_list
 
