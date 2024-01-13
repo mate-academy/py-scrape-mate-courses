@@ -46,9 +46,10 @@ def get_all_courses() -> list[Course]:
     courses_div = soup.select(
         "div.ProfessionCard_cardWrapper__JQBNJ"
     )
-    courses = []
-    for course in courses_div:
-        courses.extend(get_course_info(course))
+    courses = [
+        item for sublist in [get_course_info(course) for course in courses_div]
+        for item in sublist
+    ]
     return courses
 
 
