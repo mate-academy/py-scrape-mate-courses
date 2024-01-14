@@ -52,32 +52,23 @@ def parse_course(course_soup: Tag) -> list[Course]:
         modules, topics, duration = parse_additional_info(course_link)
 
         if course_type == "Власний темп":
-            courses.append(
-                Course(
-                    name=course_soup.select_one("a > h3").text,
-                    short_description=course_soup.select_one(
-                        "p:nth-child(3)"
-                    ).text,
-                    course_type=CourseType.PART_TIME,
-                    modules_count=modules,
-                    topics_count=topics,
-                    duration_in_months=duration,
-                )
-            )
+            course_type = CourseType.PART_TIME
 
         if course_type == "Повний день":
-            courses.append(
-                Course(
-                    name=course_soup.select_one("a > h3").text,
-                    short_description=course_soup.select_one(
-                        "p:nth-child(3)"
-                    ).text,
-                    course_type=CourseType.FULL_TIME,
-                    modules_count=modules,
-                    topics_count=topics,
-                    duration_in_months=duration,
-                )
+            course_type = CourseType.FULL_TIME
+
+        courses.append(
+            Course(
+                name=course_soup.select_one("a > h3").text,
+                short_description=course_soup.select_one(
+                    "p:nth-child(3)"
+                ).text,
+                course_type=course_type,
+                modules_count=modules,
+                topics_count=topics,
+                duration_in_months=duration,
             )
+        )
     return courses
 
 
