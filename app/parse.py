@@ -11,7 +11,7 @@ BASE_URL = "https://mate.academy/en"
 logging.basicConfig(
     level=logging.DEBUG,
     format="[%(levelname)8s]: %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)]
+    handlers=[logging.StreamHandler(sys.stdout)],
 )
 
 
@@ -28,18 +28,34 @@ class Course:
 
 
 def parse_single_course(course_soup: BeautifulSoup) -> Course:
-    button_texts = [button.text for button in course_soup.select(".ButtonBody_buttonText__FMZEg")]
+    courses = []
+
+    button_texts = [
+        button.text
+        for button in course_soup.select(".ButtonBody_buttonText__FMZEg")
+    ]
 
     if "Full time" in button_texts:
-        course_type = CourseType("full-time")
-    elif "Flex" in button_texts:
-        course_type = CourseType("part-time")
-
-    return Course(
-        name=course_soup.select_one("h3").text,
-        short_description=course_soup.select(".typography_landingTextMain__Rc8BD")[-1].text,
-        course_type=course_type
-    )
+        courses.append(
+            Course(
+                name=course_soup.select_one("h3").text,
+                short_description=course_soup.select(
+                    ".typography_landingTextMain__Rc8BD"
+                )[-1].text,
+                course_type=CourseType.FULL_TIME,
+            )
+        )
+    if "Flex" in button_texts:
+        courses.append(
+            Course(
+                name=course_soup.select_one("h3").text,
+                short_description=course_soup.select(
+                    ".typography_landingTextMain__Rc8BD"
+                )[-1].text,
+                course_type=CourseType.PART_TIME,
+            )
+        )
+    return courses
 
 
 def get_all_courses() -> list[Course]:
@@ -49,7 +65,12 @@ def get_all_courses() -> list[Course]:
     soup = BeautifulSoup(page, "html.parser")
 
     courses_soup = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
-    return [parse_single_course(course_soup) for course_soup in courses_soup]
+
+    all_courses = []
+    for course_soup in courses_soup:
+        all_courses.extend(parse_single_course(course_soup))
+
+    return all_courses
 
 
 if __name__ == "__main__":
