@@ -43,7 +43,7 @@ def get_course_type_for_course(course_soup: BeautifulSoup) -> list[CourseType]:
 def parse_single_course(
         course_soup: BeautifulSoup,
         course_types: [CourseType]
-) -> list[Course] | Course:
+) -> list[Course]:
     course_info = []
     for course_type in course_types:
         course = Course(
@@ -64,13 +64,13 @@ def get_all_courses() -> list[Course]:
         BeautifulSoup(page, "html.parser")
         .select(".ProfessionCard_cardWrapper__JQBNJ")
     )
-    list_courses = []
+    courses = []
     for soup_info in soup:
         course_types = get_course_type_for_course(soup_info)
         course = parse_single_course(soup_info, course_types)
-        list_courses.extend(course)
+        courses.extend(course)
 
-    return list_courses
+    return courses
 
 
 if __name__ == "__main__":
