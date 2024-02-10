@@ -43,7 +43,7 @@ def get_course_type_for_course(course_soup: BeautifulSoup) -> list[CourseType]:
 def parse_single_course(
         course_soup: BeautifulSoup,
         course_types: [CourseType]
-) -> [Course]:
+) -> [Course] | Course:
     course_info = []
     for course_type in course_types:
         course = Course(
