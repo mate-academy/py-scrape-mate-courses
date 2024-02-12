@@ -81,9 +81,9 @@ def get_all_courses() -> list[Course]:
 
     courses = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
 
-    for soup in courses:
-        for course in get_single_course(soup):
-            all_courses.append(course)
+    all_courses.extend(
+        [course for soup in courses for course in get_single_course(soup)]
+    )
 
     return all_courses
 
