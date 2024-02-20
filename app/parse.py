@@ -51,9 +51,9 @@ def get_single_page_quote(page_soup: BeautifulSoup) -> [Course]:
     )
 
     return [
-        course
+        parsing_course
         for i in range(0, len(courses) - 1)
-        for course in parse_single_course(courses.contents[i])
+        for parsing_course in parse_single_course(courses.contents[i])
     ]
 
 
@@ -62,7 +62,6 @@ def get_all_courses() -> [Course]:
     soup = BeautifulSoup(page, "html.parser")
 
     all_courses = get_single_page_quote(soup)
-    print(all_courses)
     return all_courses
 
 
