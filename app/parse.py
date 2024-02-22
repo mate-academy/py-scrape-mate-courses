@@ -1,18 +1,13 @@
-from dataclasses import dataclass
-from enum import Enum
+from app.scrapper import MateScrapper
+from app.models import Course
 
 
-class CourseType(Enum):
-    FULL_TIME = "full-time"
-    PART_TIME = "part-time"
+def parse() -> list[Course]:
+    scrapper = MateScrapper()
+    all_courses = scrapper.get_all_courses()
+
+    return all_courses
 
 
-@dataclass
-class Course:
-    name: str
-    short_description: str
-    course_type: CourseType
-
-
-def get_all_courses() -> list[Course]:
-    pass
+if __name__ == "__main__":
+    print(parse())
