@@ -17,18 +17,47 @@ class Course:
     name: str
     short_description: str
     course_type: CourseType
+    modules: int
+    topics: int
+    duration: str
+
+
+def get_course_details(url: str) -> dict:
+    page = requests.get(url).content
+    soup = BeautifulSoup(page, "html.parser")
+
+    course_modules = soup.select(".CourseModulesHeading_text__bBEaP")[0].text
+    course_topics = soup.select(".CourseModulesHeading_text__bBEaP")[1].text
+    course_duration = soup.select(".CourseModulesHeading_text__bBEaP")[2].text
+
+    return {
+        "modules": course_modules,
+        "topics": course_topics,
+        "duration": course_duration
+    }
 
 
 def create_course(course_soup: Tag, full_time: bool = False) -> Course:
+    course_type = CourseType.PART_TIME
+    course_url = (
+        URL[:-1] + course_soup.select_one("a[data-qa^='part']").attrs["href"]
+    )
+
     if full_time:
         course_type = CourseType.FULL_TIME
-    else:
-        course_type = CourseType.PART_TIME
+        course_url = (
+            URL[:-1] + course_soup.select_one("a[data-qa^='fu']").attrs["href"]
+        )
+
+    details = get_course_details(course_url)
 
     return Course(
         name=course_soup.select_one("h3").text,
         short_description=course_soup.select_one(".mb-32").text,
-        course_type=course_type
+        course_type=course_type,
+        modules=details["modules"],
+        topics=details["topics"],
+        duration=details["duration"]
     )
 
 
