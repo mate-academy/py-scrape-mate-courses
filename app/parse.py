@@ -76,8 +76,8 @@ def get_all_courses() -> list[Course]:
 
     all_courses = []
 
-    for i, course_card in enumerate(course_cards):
-        logging.info(f"Processing {i + 1} of {len(course_cards)} items.")
+    for number, course_card in enumerate(course_cards):
+        logging.info(f"Processing {number + 1} of {len(course_cards)} items.")
         course_types = get_course_type(course_card)
         for course_type in course_types:
             all_courses.append(parse_single_course(course_card, course_type))
@@ -89,11 +89,12 @@ def get_all_courses() -> list[Course]:
     return all_courses
 
 
-def output_as_csv(path: str, obj_to_write: [Course], csv_fields: list) -> None:
-    with open(
-        path,
-        "w",
-    ) as file:
+def output_as_csv(
+        path: str,
+        obj_to_write: [Course],
+        csv_fields: list[str]
+) -> None:
+    with open(path, "w",) as file:
         writer = csv.writer(file)
         writer.writerow(csv_fields)
         writer.writerows([astuple(obj) for obj in obj_to_write])
