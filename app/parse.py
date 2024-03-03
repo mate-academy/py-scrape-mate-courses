@@ -2,6 +2,7 @@ import csv
 import logging
 import sys
 from dataclasses import dataclass, fields, astuple
+from datetime import datetime
 from enum import Enum
 
 import requests
@@ -35,7 +36,7 @@ class Course:
 CSV_FIELDS_COURSE = [field.name for field in fields(Course)]
 
 
-def get_course_type(course_soup) -> [CourseType]:
+def get_course_type(course_soup: BeautifulSoup) -> [CourseType]:
     tags = course_soup.select(".ButtonBody_buttonText__FMZEg")
     course_types = []
     for tag in tags:
@@ -67,15 +68,23 @@ def parse_single_course(
 
 
 def get_all_courses() -> list[Course]:
+    logging.info(
+        f"Started parsing at {datetime.now().strftime('%d.%m.%Y, %H:%M:%S')}"
+    )
     page_soup = get_page_soup()
     course_cards = page_soup.select("div.ProfessionCard_cardWrapper__JQBNJ")
 
     all_courses = []
 
-    for course_card in course_cards:
+    for i, course_card in enumerate(course_cards):
+        logging.info(f"Processing {i + 1} of {len(course_cards)} items.")
         course_types = get_course_type(course_card)
         for course_type in course_types:
             all_courses.append(parse_single_course(course_card, course_type))
+
+    logging.info(
+        f"Finished parsing at {datetime.now().strftime('%d.%m.%Y, %H:%M:%S')}"
+    )
 
     return all_courses
 
@@ -93,6 +102,6 @@ def output_as_csv(path: str, obj_to_write: [Course], csv_fields: list) -> None:
 
 
 if __name__ == "__main__":
-    logging.info(f"Response: {requests.get(HOME_URL).status_code}")
+    logging.info(f"Server response: {requests.get(HOME_URL).status_code}")
     courses = get_all_courses()
     output_as_csv("output.csv", courses, CSV_FIELDS_COURSE)
