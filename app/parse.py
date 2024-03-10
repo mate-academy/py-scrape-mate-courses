@@ -51,14 +51,15 @@ def select_full_time_link(course: Tag) -> BeautifulSoup:
     return get_detail_page(get_full_time)
 
 
-def get_course(course: Tag, detail_page: BeautifulSoup, time: str) -> Course:
-    course_time = (
-        CourseType.FULL_TIME if time == "full" else CourseType.PART_TIME
-    )
+def get_course(
+        course: Tag,
+        detail_page: BeautifulSoup,
+        course_type: CourseType
+) -> Course:
     check = Course(
         name=course.select_one(".ProfessionCard_title__Zq5ZY").text,
         short_description=course.select_one("p.mb-32").text,
-        course_type=course_time,
+        course_type=course_type,
         modules=detail_page.select_one(
             "div.CourseModulesHeading_modulesNumber__UrnUh "
             "> p.CourseModulesHeading_text__bBEaP"
@@ -79,26 +80,19 @@ def get_all_courses() -> list[Course]:
     courses = get_page_course()
     all_course = []
     for course in courses:
+        all_course.append(
+            get_course(
+                course,
+                select_part_time_link(course),
+                CourseType.PART_TIME
+            )
+        )
         if len(course.select(".Button_large__rIMVg")) > 1:
             all_course.append(
                 get_course(
                     course,
-                    select_part_time_link(course),
-                    "part"
-                )
-            )
-            all_course.append(
-                get_course(
-                    course,
                     select_full_time_link(course),
-                    "full")
-            )
-        else:
-            all_course.append(
-                get_course(
-                    course,
-                    select_part_time_link(course),
-                    "part")
+                    CourseType.FULL_TIME)
             )
 
     return all_course
