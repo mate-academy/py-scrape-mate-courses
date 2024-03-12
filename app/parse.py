@@ -28,24 +28,25 @@ def parse_courses(course_soup: BeautifulSoup,
         for button in course_soup.select(".ButtonBody_buttonText__FMZEg")
     ]
     if "Full time" in button_texts:
-        courses.append(
-            Course(
-                name=course_soup.select_one("h3").text,
-                short_description=course_soup.select(
-                    ".typography_landingTextMain__Rc8BD"
-                )[-1].text,
-                course_type=CourseType.FULL_TIME, ),
-        )
+        append_to(courses, course_soup, CourseType.FULL_TIME, )
     if "Flex" in button_texts:
-        courses.append(
-            Course(
-                name=course_soup.select_one("h3").text,
-                short_description=course_soup.select(
-                    ".typography_landingTextMain__Rc8BD"
-                )[-1].text,
-                course_type=CourseType.PART_TIME, )
-        )
+        append_to(courses, course_soup, CourseType.PART_TIME,
+                  )
     return courses
+
+
+def append_to(courses: list[Course],
+              course_soup: BeautifulSoup,
+              type_of_course: CourseType,
+              ) -> None:
+    courses.append(
+        Course(
+            name=course_soup.select_one("h3").text,
+            short_description=course_soup.select(
+                ".typography_landingTextMain__Rc8BD"
+            )[-1].text,
+            course_type=type_of_course),
+    )
 
 
 def get_all_courses() -> list[Course]:
