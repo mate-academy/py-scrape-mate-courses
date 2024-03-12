@@ -19,8 +19,8 @@ class Course:
     course_type: CourseType
 
 
-def parse_single_course(course_soup: BeautifulSoup,
-                        ) -> list[Course]:
+def parse_courses(course_soup: BeautifulSoup,
+                  ) -> list[Course]:
     courses = []
 
     button_texts = [
@@ -28,25 +28,24 @@ def parse_single_course(course_soup: BeautifulSoup,
         for button in course_soup.select(".ButtonBody_buttonText__FMZEg")
     ]
     if "Full time" in button_texts:
-        append_course(course_soup, courses, CourseType.FULL_TIME)
-    if "Flex" in button_texts:
-        append_course(course_soup, courses, CourseType.PART_TIME)
-    return courses
-
-
-def append_course(course_soup: BeautifulSoup,
-                  courses: list[Course],
-                  type_of_course: CourseType,
-                  ) -> None:
-    courses.append(
-        Course(
-            name=course_soup.select_one("h3").text,
-            short_description=course_soup.select(
-                ".typography_landingTextMain__Rc8BD"
-            )[-1].text,
-            course_type=type_of_course,
+        courses.append(
+            Course(
+                name=course_soup.select_one("h3").text,
+                short_description=course_soup.select(
+                    ".typography_landingTextMain__Rc8BD"
+                )[-1].text,
+                course_type=CourseType.FULL_TIME, ),
         )
-    )
+    if "Flex" in button_texts:
+        courses.append(
+            Course(
+                name=course_soup.select_one("h3").text,
+                short_description=course_soup.select(
+                    ".typography_landingTextMain__Rc8BD"
+                )[-1].text,
+                course_type=CourseType.PART_TIME, )
+        )
+    return courses
 
 
 def get_all_courses() -> list[Course]:
@@ -55,7 +54,7 @@ def get_all_courses() -> list[Course]:
     courses_soup = soup.select(".ProfessionCard_cardWrapper__JQBNJ")
     all_courses = []
     for course_soup in courses_soup:
-        all_courses.extend(parse_single_course(course_soup))
+        all_courses.extend(parse_courses(course_soup))
 
     return all_courses
 
