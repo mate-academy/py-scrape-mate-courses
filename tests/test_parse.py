@@ -1,4 +1,5 @@
-from app.parse import get_all_courses, CourseType
+from app.parse import get_all_courses
+from app.course import CourseType
 
 
 FOR_SURE_THIS_COURSES = [
