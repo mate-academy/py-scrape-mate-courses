@@ -27,5 +27,13 @@ class Course:
     duration: str
 
 
+def parse_single_course(course: Tag) -> Course:
+    return Course(
+        name=course.select_one(CSS_SELECTORS["name"]).text,
+        short_description=course.select_one(CSS_SELECTORS["description"]).text,
+        duration=course.select_one(CSS_SELECTORS["duration"]).text
+    )
+
+
 def get_all_courses() -> list[Course]:
     pass
