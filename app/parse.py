@@ -35,5 +35,10 @@ def parse_single_course(course: Tag) -> Course:
     )
 
 
+def fetch_page(url: str) -> BeautifulSoup:
+    response = requests.get(url)
+    return BeautifulSoup(response.content, "html.parser")
+
+
 def get_all_courses() -> list[Course]:
     pass
