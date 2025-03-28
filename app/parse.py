@@ -41,4 +41,16 @@ def fetch_page(url: str) -> BeautifulSoup:
 
 
 def get_all_courses() -> list[Course]:
-    pass
+    soup = fetch_page(BASE_URL)
+    courses = soup.select(CSS_SELECTORS["course_card"])
+
+    return [parse_single_course(course) for course in courses]
+
+
+def main() -> None:
+    courses = get_all_courses()
+    print(courses)
+
+
+if __name__ == "__main__":
+    main()
