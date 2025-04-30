@@ -27,7 +27,7 @@ def get_all_courses() -> list[Course]:
     text = requests.get(HOME_URL).content
     soup_data = BeautifulSoup(text, "html.parser")
     courses = soup_data.select(".ProfessionCard_content__mPiVi")
-    return [get_singe_course(course) for course in courses]
+    return [get_single_course(course) for course in courses]
 
 
 if __name__ == "__main__":
