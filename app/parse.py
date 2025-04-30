@@ -13,7 +13,7 @@ class Course:
     duration: str
 
 
-def get_singe_course(soup: Tag) -> Course:
+def get_single_course(soup: Tag) -> Course:
     return Course(
         name=soup.select_one(".ProfessionCard_title__m7uno").text,
         short_description=soup.select_one(
