@@ -16,3 +16,7 @@ dependencies = [
     "ruff>=0.12.0",
     "scrapy>=2.13.2",
 ]
+
+[tool.ruff.format]
+exclude = ["tests", "migrations", ".venv"]
+quote-style = "double"  # code qoute style (using double qoutes)

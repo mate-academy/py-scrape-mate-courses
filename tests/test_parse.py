@@ -7,8 +7,9 @@ FOR_SURE_THIS_COURSES = [
     "Recruiter",
     "DevOps",
     "Digital",
-    "Data"
+    "Data",
 ]
+
 
 def test_get_all_courses():
     with open("../courses.csv", encoding="utf-8") as f:
