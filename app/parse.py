@@ -4,7 +4,7 @@ from dataclasses import dataclass, fields, astuple
 import requests
 from bs4 import BeautifulSoup, Tag
 
-BASE_URL = "https://mate.academy/"
+BASE_URL = "https://mate.academy/courses/"
 
 
 @dataclass
