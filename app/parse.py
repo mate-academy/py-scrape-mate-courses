@@ -40,10 +40,10 @@ def get_course_description(soup: BeautifulSoup) -> str:
 
 def get_single_module(module: Tag) -> str:
     name = module.select_one(".CourseModulesList_topicName__7vxtk").text
-    tasks_count = module.select_one(
-        ".CourseModulesList_topicsCount__H_fv3"
-    ).text.split()[0]
-    return f"{name} ({tasks_count} topics)"
+    topics_count = module.select_one(".CourseModulesList_topicsCount__H_fv3")
+    if topics_count:
+        tasks_count = topics_count.text.split()[0]
+    return f"{name} ({topics_count} topics)"
 
 
 def get_modules(soup: BeautifulSoup) -> list[str]:
@@ -51,6 +51,7 @@ def get_modules(soup: BeautifulSoup) -> list[str]:
     modules = soup.select(
         ".CourseModulesList_modulesList__C86yL > .color-dark-blue"
     )
+    # 1st element is a "get started" text
     for module in modules[2:]:
         result.append(get_single_module(module))
     return result
@@ -64,7 +65,10 @@ def get_detail_data(detail_url: str) -> tuple[list[str], str]:
 
 
 def get_course(card: Tag) -> Course:
-    detail_url = urljoin(BASE_URL, card["href"])
+    detail_url = card.get("href", None)
+    if not detail_url:
+        raise Exception("No detail url found")
+    detail_url = urljoin(BASE_URL, detail_url)
     modules, description = get_detail_data(detail_url)
     name = card.select_one(".ProfessionCard_title__m7uno").get_text(
         strip=True
@@ -84,6 +88,12 @@ def get_course(card: Tag) -> Course:
 def get_all_courses(url: str = BASE_URL) -> List[Course]:
     soup = get_html(url)
     cards = soup.select(".ProfessionCard_cardWrapper__BCg0O")
+    result = []
+    for card in cards:
+        try:
+            result.append(get_course(card))
+        except Exception as e:
+            logging.error(e)
     return [get_course(card) for card in cards]
 
 
