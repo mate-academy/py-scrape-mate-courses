@@ -42,7 +42,7 @@ def get_single_module(module: Tag) -> str:
     name = module.select_one(".CourseModulesList_topicName__7vxtk").get_text()
     topics_count = module.select_one(".CourseModulesList_topicsCount__H_fv3")
     if topics_count:
-        tasks_count = topics_count.get_text().split()[0]
+        topics_count = topics_count.get_text().split()[0]
     return f"{name} ({topics_count} topics)"
 
 
