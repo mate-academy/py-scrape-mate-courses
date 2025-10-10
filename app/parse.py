@@ -10,7 +10,10 @@ from bs4 import BeautifulSoup, Tag
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout), logging.FileHandler("parser.log")],
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler("parser.log"),
+    ],
 )
 
 BASE_URL = "https://mate.academy/"
@@ -45,7 +48,9 @@ def get_single_module(module: Tag) -> str:
 
 def get_modules(soup: BeautifulSoup) -> list[str]:
     result = []
-    modules = soup.select(".CourseModulesList_modulesList__C86yL > .color-dark-blue")
+    modules = soup.select(
+        ".CourseModulesList_modulesList__C86yL > .color-dark-blue"
+    )
     for module in modules[2:]:
         result.append(get_single_module(module))
     return result
@@ -61,13 +66,18 @@ def get_detail_data(detail_url: str) -> tuple[list[str], str]:
 def get_course(card: Tag) -> Course:
     detail_url = urljoin(BASE_URL, card["href"])
     modules, description = get_detail_data(detail_url)
-    name = card.select_one(".ProfessionCard_title__m7uno").get_text(strip=True)
+    name = card.select_one(".ProfessionCard_title__m7uno").get_text(
+        strip=True
+    )
     duration = card.select_one(".typography_paragraphMedium__FWO7K").get_text(
         strip=True
     )
 
     return Course(
-        name=name, short_description=description, duration=duration, modules=modules
+        name=name,
+        short_description=description,
+        duration=duration,
+        modules=modules,
     )
 
 
