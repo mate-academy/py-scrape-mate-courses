@@ -35,14 +35,14 @@ def get_html(url: str) -> BeautifulSoup:
 
 def get_course_description(soup: BeautifulSoup) -> str:
     element = soup.select_one(".SalarySection_aboutProfession__C6ftM")
-    return element.text if element else "No description available."
+    return element.get_text()
 
 
 def get_single_module(module: Tag) -> str:
-    name = module.select_one(".CourseModulesList_topicName__7vxtk").text
+    name = module.select_one(".CourseModulesList_topicName__7vxtk").get_text()
     topics_count = module.select_one(".CourseModulesList_topicsCount__H_fv3")
     if topics_count:
-        tasks_count = topics_count.text.split()[0]
+        tasks_count = topics_count.get_text().split()[0]
     return f"{name} ({topics_count} topics)"
 
 
