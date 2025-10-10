@@ -46,7 +46,7 @@ def get_html(url: str) -> BeautifulSoup:
 def get_course_description(soup: BeautifulSoup) -> str:
     element = soup.select_one(".SalarySection_aboutProfession__C6ftM")
     if element is None:
-        logging.error(f"Element not found")
+        logging.error("Element not found")
         raise ParseError
     return element.get_text()
 
