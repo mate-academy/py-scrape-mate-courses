@@ -19,6 +19,10 @@ logging.basicConfig(
 BASE_URL = "https://mate.academy/"
 
 
+class ParseError(Exception):
+    pass
+
+
 @dataclass
 class Course:
     name: str
@@ -28,21 +32,36 @@ class Course:
 
 
 def get_html(url: str) -> BeautifulSoup:
-    response = requests.get(url)
-    response.raise_for_status()
+    try:
+        response = requests.get(url, timeout=5)
+    except requests.RequestException as e:
+        logging.error(e)
+        raise ParseError
+    if response.status_code != 200:
+        logging.error(f"Status code: {response.status_code}")
+        raise ParseError
     return BeautifulSoup(response.content, "html.parser")
 
 
 def get_course_description(soup: BeautifulSoup) -> str:
     element = soup.select_one(".SalarySection_aboutProfession__C6ftM")
+    if element is None:
+        logging.error(f"Element not found")
+        raise ParseError
     return element.get_text()
 
 
 def get_single_module(module: Tag) -> str:
-    name = module.select_one(".CourseModulesList_topicName__7vxtk").get_text()
+    name = module.select_one(".CourseModulesList_topicName__7vxtk").get_text(
+        strip=True
+    )
     topics_count = module.select_one(".CourseModulesList_topicsCount__H_fv3")
+    if not name:
+        name = "N/A"
     if topics_count:
-        topics_count = topics_count.get_text().split()[0]
+        topics_count = topics_count.get_text(strip=True).split()[0]
+    else:
+        topics_count = "N/A"
     return f"{name} ({topics_count} topics)"
 
 
@@ -76,6 +95,10 @@ def get_course(card: Tag) -> Course:
     duration = card.select_one(".typography_paragraphMedium__FWO7K").get_text(
         strip=True
     )
+    if not name:
+        name = "N/A"
+    if not description:
+        description = "N/A"
 
     return Course(
         name=name,
@@ -92,9 +115,9 @@ def get_all_courses(url: str = BASE_URL) -> List[Course]:
     for card in cards:
         try:
             result.append(get_course(card))
-        except Exception as e:
-            logging.error(e)
-    return [get_course(card) for card in cards]
+        except ParseError:
+            pass
+    return result
 
 
 def main() -> None:
