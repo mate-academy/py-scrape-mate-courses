@@ -1,10 +1,10 @@
+import re
 import sys
 import time
 import random
 from dataclasses import dataclass
 import requests
 import logging
-from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 logging.basicConfig(
@@ -18,6 +18,10 @@ logging.basicConfig(
 
 
 BASE_URL = "https://mate.academy"
+COURSE_STILE = "ProfessionCard_card"
+NAME_STILE = "ProfessionCard_title"
+DURATION_STILE = "ProfessionCard_duration"
+DESCRIPTION_STILE = "ProfessionCard_description"
 
 
 @dataclass
@@ -57,65 +61,37 @@ def get_soup(url: str) -> BeautifulSoup:
                 raise
 
 
+def get_field(soup: BeautifulSoup, stile_filter: str) -> str | None:
+    soup = soup.find(class_=re.compile(stile_filter))
+    if soup is not None:
+        field = (
+            soup.text
+            if soup.text is not None
+            else None
+        )
+        if field is None:
+            logging.warning(
+                f"Has not found text in soup for filter: {stile_filter}"
+            )
+    else:
+        field = None
+        logging.warning(
+            f"Has not found data in soup for filter: {stile_filter}"
+        )
+    return field
+
+
 def get_all_courses() -> list[Course]:
     courses = []
     courses_soup = get_soup(BASE_URL)
-    raw_courses = courses_soup.select(".ProfessionCard_cardWrapper__BCg0O")
+    courses_soup = courses_soup.find_all(class_=re.compile(COURSE_STILE))
 
-    for raw_course in raw_courses:
-        raw_name = raw_course.select_one(
-            ".ProfessionCard_title__m7uno"
-            ".typography_captionLarge__fZ9ls"
-            ".typography_medium_captionMedium__MVxkq"
-        )
-        if raw_name is not None:
-            name = raw_name.text if raw_name.text is not None else None
-        else:
-            logging.warning("Couldn't find text name, skipping")
+    for course_soup in courses_soup:
+        name = get_field(course_soup, NAME_STILE)
+        if name is None:
             continue
-
-        raw_duration = raw_course.select_one(
-            ".typography_paragraphMedium__FWO7K."
-            "ProfessionCard_text___l0Du.ProfessionCard_duration__13PwX"
-        )
-        if raw_duration is not None:
-            duration = (
-                raw_duration.text
-                if raw_duration.text is not None
-                else "unknown"
-            )
-        else:
-            duration = "unknown"
-            logging.warning(
-                f"Has not found duration for course {name}, "
-                f"input 'unknown"
-            )
-
-        href = raw_course.get("href")
-        if href is None:
-            description = "no description"
-            logging.warning(f"Link not found for {name}")
-
-        else:
-            course_url = urljoin(BASE_URL, href)
-            course_soup = get_soup(course_url)
-
-            raw_description = course_soup.select_one(
-                "p.typography_textMain__oRJ69"
-                ".SalarySection_aboutProfession__C6ftM"
-            )
-
-            if raw_description is not None:
-                description = (
-                    raw_description.text
-                    if raw_description.text
-                    else "No description"
-                )
-        if description == "No description":
-            logging.warning(
-                f"Couldn't find description for course {name}, "
-                f"input 'No description')"
-            )
+        duration = get_field(course_soup, DURATION_STILE)
+        description = get_field(course_soup, DESCRIPTION_STILE)
         courses.append(
             Course(
                 name=name,
