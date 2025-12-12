@@ -17,16 +17,30 @@ COURSES_FIELDS = [field.name for field in fields(Course)]
 
 
 def parser_single_course(course: Tag) -> Course:
-    return Course(
-        name=course.select_one(
+    try:
+        name = course.select_one(
             ".ProfessionCard_title__m7uno"
-        ).get_text(strip=True),
-        short_description=course.select_one(
+        ).get_text(strip=True)
+    except AttributeError:
+        name = ""
+
+    try:
+        short_description = course.select_one(
             ".ProfessionCard_description__K8weo"
-        ).get_text(strip=True),
-        duration=course.select_one(
+        ).get_text(strip=True)
+    except AttributeError:
+        short_description = ""
+
+    try:
+        duration = course.select_one(
             ".ProfessionCard_duration__13PwX"
-        ).get_text(strip=True),
+        ).get_text(strip=True)
+    except AttributeError:
+        duration = ""
+    return Course(
+        name=name,
+        short_description=short_description,
+        duration=duration,
     )
 
 
