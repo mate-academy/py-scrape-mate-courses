@@ -1,4 +1,12 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+import re
+import time
+from typing import Iterable, List, Optional, Set
+from urllib.request import Request, urlopen
+
+from bs4 import BeautifulSoup, Tag
 
 
 @dataclass
@@ -8,5 +16,159 @@ class Course:
     duration: str
 
 
+_BASE_URL = "https://mate.academy"
+# Ключові слова для пошуку тривалості
+_DURATION_HINTS = (
+    "week",
+    "weeks",
+    "month",
+    "months",
+    "місяц",
+    "місяці",
+    "місяців",
+    "тиж",
+    "тижні",
+    "тижнів",
+)
+_DURATION_RE = re.compile(
+    r"(?i)\b(\d+(?:[.,]\d+)?)\s*("
+    r"weeks?|months?|"
+    r"місяц(?:і|ів)?|тиж(?:ні|нів)?"
+    r")\b"
+)
+
+
+def _fetch_html(url: str) -> BeautifulSoup:
+    """Завантажити HTML і повернути BeautifulSoup."""
+    # Чемний User-Agent, деякі CDN блокують дефолтні агенти.
+    req = Request(
+        url,
+        headers={"User-Agent": "Mozilla/5.0 (compatible; mate-scraper/1.0)"},
+    )
+    with urlopen(req, timeout=15) as resp:
+        html = resp.read().decode("utf-8", errors="ignore")
+    return BeautifulSoup(html, "html.parser")
+
+
+def _select_course_cards(soup: BeautifulSoup) -> List[Tag]:
+    """Підібрати можливі картки курсів різними селекторами."""
+    selectors = [
+        '[data-qa="course-card"]',
+        '[data-test="course-card"]',
+        '.course-card',
+        '.CourseCard',
+        'div[class*="CourseCard"]',
+        'div[class*="courseCard"]',
+        'article[class*="course"]',
+        'a[class*="CourseCard"]',
+    ]
+    cards: List[Tag] = []
+    seen: Set[int] = set()
+    for sel in selectors:
+        for el in soup.select(sel):
+            if isinstance(el, Tag) and id(el) not in seen:
+                seen.add(id(el))
+                cards.append(el)
+    # Фолбек: інколи картки – це <section> із заголовком і описом поряд
+    if not cards:
+        for section in soup.select("section"):
+            if section.select_one("h2, h3") and section.select_one("p"):
+                cards.append(section)
+    return cards
+
+
+def _text(el: Optional[Tag]) -> str:
+    return el.get_text(strip=True) if isinstance(el, Tag) else ""
+
+
+def _find_name(card: Tag) -> str:
+    cand = (
+        card.select_one('[data-qa="course-title"]')
+        or card.select_one("h3")
+        or card.select_one("h2")
+        or card.find("header")
+    )
+    name = _text(cand)
+    if not name:
+        # Фолбек: перший жирний/посилання як назва
+        name = _text(card.select_one("strong")) or _text(card.select_one("a"))
+    return name
+
+
+def _find_description(card: Tag) -> str:
+    desc = (
+        card.select_one('[data-qa="course-description"]')
+        or card.select_one("p")
+    )
+    # Якщо багато <p>, беремо найінформативніший (найдовший) до 280 символів.
+    if not desc:
+        ps = [p for p in card.select("p") if _text(p)]
+        if ps:
+            desc = max(ps, key=lambda p: len(_text(p)))
+    text = _text(desc)
+    return text[:280] if text else ""
+
+
+def _find_duration(card: Tag) -> str:
+    dur_el = (
+        card.select_one('[data-qa="course-duration"]')
+        or card.select_one('[class*="duration" i]')
+        or card.select_one("time")
+        or card.find(string=_DURATION_RE)
+    )
+    if isinstance(dur_el, Tag):
+        txt = _text(dur_el)
+    else:
+        txt = str(dur_el) if dur_el else ""
+
+    # Якщо не знайшли — проглянемо весь текст картки евристикою.
+    corpus = txt or card.get_text(" ", strip=True)
+    # Спершу спробуємо регулярку з числами + одиницями
+    m = _DURATION_RE.search(corpus)
+    if m:
+        # Нормалізуємо крапку/кому та пробіли
+        num = m.group(1).replace(",", ".")
+        unit = m.group(2).lower()
+        return f"{num} {unit}"
+    # Інакше — шукаємо ключові слова (мінімально)
+    for hint in _DURATION_HINTS:
+        if hint in corpus.lower():
+            return hint
+    return ""
+
+
+def _extract_course(card: Tag) -> Optional[Course]:
+    name = _find_name(card)
+    desc = _find_description(card)
+    dur = _find_duration(card)
+    # Відкидаємо порожні заглушки
+    if not name:
+        return None
+    return Course(name=name, short_description=desc, duration=dur)
+
+
+def _dedup_courses(courses: Iterable[Course]) -> List[Course]:
+    seen: Set[str] = set()
+    out: List[Course] = []
+    for c in courses:
+        key = c.name.strip().lower()
+        if key and key not in seen:
+            seen.add(key)
+            out.append(c)
+    return out
+
+
 def get_all_courses() -> list[Course]:
-    pass
+    """Повертає список усіх курсів з головної mate.academy."""
+    soup = _fetch_html(_BASE_URL)
+    # Трохи поваги до ресурсу (на випадок кількох запитів у майбутньому)
+    time.sleep(0.2)
+
+    cards = _select_course_cards(soup)
+    courses: List[Course] = []
+    for card in cards:
+        course = _extract_course(card)
+        if course:
+            courses.append(course)
+
+    return _dedup_courses(courses)
