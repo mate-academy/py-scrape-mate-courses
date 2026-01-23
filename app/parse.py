@@ -40,7 +40,6 @@ _DURATION_RE = re.compile(
 
 def _fetch_html(url: str) -> BeautifulSoup:
     """Завантажити HTML і повернути BeautifulSoup."""
-    # Чемний User-Agent, деякі CDN блокують дефолтні агенти.
     req = Request(
         url,
         headers={"User-Agent": "Mozilla/5.0 (compatible; mate-scraper/1.0)"},
@@ -55,8 +54,8 @@ def _select_course_cards(soup: BeautifulSoup) -> List[Tag]:
     selectors = [
         '[data-qa="course-card"]',
         '[data-test="course-card"]',
-        '.course-card',
-        '.CourseCard',
+        ".course-card",
+        ".CourseCard",
         'div[class*="CourseCard"]',
         'div[class*="courseCard"]',
         'article[class*="course"]',
@@ -69,7 +68,6 @@ def _select_course_cards(soup: BeautifulSoup) -> List[Tag]:
             if isinstance(el, Tag) and id(el) not in seen:
                 seen.add(id(el))
                 cards.append(el)
-    # Фолбек: інколи картки – це <section> із заголовком і описом поряд
     if not cards:
         for section in soup.select("section"):
             if section.select_one("h2, h3") and section.select_one("p"):
@@ -90,7 +88,6 @@ def _find_name(card: Tag) -> str:
     )
     name = _text(cand)
     if not name:
-        # Фолбек: перший жирний/посилання як назва
         name = _text(card.select_one("strong")) or _text(card.select_one("a"))
     return name
 
@@ -100,11 +97,10 @@ def _find_description(card: Tag) -> str:
         card.select_one('[data-qa="course-description"]')
         or card.select_one("p")
     )
-    # Якщо багато <p>, беремо найінформативніший (найдовший) до 280 символів.
     if not desc:
-        ps = [p for p in card.select("p") if _text(p)]
-        if ps:
-            desc = max(ps, key=lambda p: len(_text(p)))
+        paragraphs = [p for p in card.select("p") if _text(p)]
+        if paragraphs:
+            desc = max(paragraphs, key=lambda p: len(_text(p)))
     text = _text(desc)
     return text[:280] if text else ""
 
@@ -121,16 +117,12 @@ def _find_duration(card: Tag) -> str:
     else:
         txt = str(dur_el) if dur_el else ""
 
-    # Якщо не знайшли — проглянемо весь текст картки евристикою.
     corpus = txt or card.get_text(" ", strip=True)
-    # Спершу спробуємо регулярку з числами + одиницями
-    m = _DURATION_RE.search(corpus)
-    if m:
-        # Нормалізуємо крапку/кому та пробіли
-        num = m.group(1).replace(",", ".")
-        unit = m.group(2).lower()
+    match_obj = _DURATION_RE.search(corpus)
+    if match_obj:
+        num = match_obj.group(1).replace(",", ".")
+        unit = match_obj.group(2).lower()
         return f"{num} {unit}"
-    # Інакше — шукаємо ключові слова (мінімально)
     for hint in _DURATION_HINTS:
         if hint in corpus.lower():
             return hint
@@ -141,7 +133,6 @@ def _extract_course(card: Tag) -> Optional[Course]:
     name = _find_name(card)
     desc = _find_description(card)
     dur = _find_duration(card)
-    # Відкидаємо порожні заглушки
     if not name:
         return None
     return Course(name=name, short_description=desc, duration=dur)
@@ -150,25 +141,24 @@ def _extract_course(card: Tag) -> Optional[Course]:
 def _dedup_courses(courses: Iterable[Course]) -> List[Course]:
     seen: Set[str] = set()
     out: List[Course] = []
-    for c in courses:
-        key = c.name.strip().lower()
+    for course_item in courses:
+        key = course_item.name.strip().lower()
         if key and key not in seen:
             seen.add(key)
-            out.append(c)
+            out.append(course_item)
     return out
 
 
 def get_all_courses() -> list[Course]:
     """Повертає список усіх курсів з головної mate.academy."""
     soup = _fetch_html(_BASE_URL)
-    # Трохи поваги до ресурсу (на випадок кількох запитів у майбутньому)
     time.sleep(0.2)
 
     cards = _select_course_cards(soup)
     courses: List[Course] = []
     for card in cards:
-        course = _extract_course(card)
-        if course:
-            courses.append(course)
+        course_obj = _extract_course(card)
+        if course_obj:
+            courses.append(course_obj)
 
     return _dedup_courses(courses)
