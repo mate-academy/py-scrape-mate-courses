@@ -1,6 +1,5 @@
 import csv
 from dataclasses import dataclass, astuple
-from pydoc_data.topics import topics
 
 import requests
 from bs4 import BeautifulSoup
