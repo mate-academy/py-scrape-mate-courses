@@ -1,5 +1,6 @@
 import csv
 from dataclasses import dataclass, astuple
+from pydoc_data.topics import topics
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,9 +17,15 @@ class Course:
 
 def parse_one_course(course: BeautifulSoup) -> Course:
     return Course(
-        name=course.select_one("span").text,
-        short_description=course.select_one(".ProfessionCard_description__K8weo").get_text(),
-        duration=course.select_one(".ProfessionCard_duration__13PwX").text.split()[0],
+        name=course.select_one(
+            ".typography_medium_captionMedium__MVxk"
+        ).text,
+        short_description=course.select_one(
+            ".ProfessionCard_description__K8weo"
+        ).get_text(),
+        duration=course.select_one(
+            ".ProfessionCard_duration__13PwX"
+        ).text,
     )
 
 
