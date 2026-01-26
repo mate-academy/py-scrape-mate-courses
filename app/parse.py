@@ -17,7 +17,7 @@ class Course:
 def parse_one_course(course: BeautifulSoup) -> Course:
     return Course(
         name=course.select_one(
-            ".typography_medium_captionMedium__MVxk"
+            "span"
         ).text,
         short_description=course.select_one(
             ".ProfessionCard_description__K8weo"
