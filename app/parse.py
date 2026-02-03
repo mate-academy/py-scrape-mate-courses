@@ -22,7 +22,7 @@ def parse_single_course(course: Tag) -> Course:
         duration=course
         .select_one(".ProfessionCard_duration__13PwX")
         .text
-        .split()[0][:-1]
+        .split()[0]
     )
 
 
