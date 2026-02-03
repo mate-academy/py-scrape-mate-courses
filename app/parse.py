@@ -14,15 +14,28 @@ class Course:
 
 
 def parse_single_course(course: Tag) -> Course:
+    name = course.select_one(".ProfessionCard_title__m7uno > span")
+    if name:
+        name = name.text
+    else:
+        name = "NaN"
+
+    short_description = course.select_one(".ProfessionCard_description__K8weo")
+    if short_description:
+        short_description = short_description.text
+    else:
+        short_description = "NaN"
+
+    duration = course.select_one(".ProfessionCard_duration__13PwX")
+    if duration:
+        duration = duration.text.split()[0]
+    else:
+        duration = "NaN"
+
     return Course(
-        name=course.select_one(".ProfessionCard_title__m7uno > span").text,
-        short_description=course
-        .select_one(".ProfessionCard_description__K8weo")
-        .text,
-        duration=course
-        .select_one(".ProfessionCard_duration__13PwX")
-        .text
-        .split()[0]
+        name=name,
+        short_description=short_description,
+        duration=duration
     )
 
 
