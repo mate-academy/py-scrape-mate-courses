@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from urllib.parse import urljoin
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -17,48 +16,56 @@ class Course:
 
 
 def retrieve_list_of_courses() -> list[tuple[str, str]]:
+    """Fetches course names and URLs from the footer."""
     response = requests.get(BASE_URL)
     soup = BeautifulSoup(response.content, "lxml")
 
-    list_tag = soup.select("ul.FooterLinks_navList__iWcAG > a")
+    course_links = soup.select("ul.FooterLinks_navList__iWcAG > a")
+
     list_of_courses = [
-        (course.text.strip(), course["href"])
-        for course in list_tag
-        if course["href"].startswith("/courses")
+        (link.text.strip(), link["href"])
+        for link in course_links
+        if link["href"].startswith("/courses")
     ]
-    list_of_courses.pop()
+
+    if list_of_courses:
+        list_of_courses.pop()
 
     return list_of_courses
 
 
 def parse_course_page(url: str, name: str) -> Course:
-    link = urljoin(BASE_URL, url)
-    response = requests.get(link)
+    """Extracts detailed information from an individual course page."""
+    full_url = urljoin(BASE_URL, url)
+    response = requests.get(full_url)
     soup = BeautifulSoup(response.content, "lxml")
 
-    descr = soup.select_one(
-        "p.SalarySection_aboutProfession__C6ftM"
-    ).text
+    descr_tag = soup.select_one("p.SalarySection_aboutProfession__C6ftM")
+    description = descr_tag.text.strip() if descr_tag else ""
+
+    duration = "N/A"
     label_cell = soup.find("div", string="Тривалість")
-    durations = [
-        div.get_text(strip=True)
-        for div in label_cell.find_next_siblings("div")
-    ]
-    duration = f"{durations[0][0]}/{durations[1][0]} month"
+    if label_cell:
+        dur_vals = [
+            "".join(filter(str.isdigit, div.text))
+            for div in label_cell.find_next_siblings("div")
+        ]
+        if len(dur_vals) >= 2:
+            duration = f"{dur_vals[0]}/{dur_vals[1]} month"
+
     modules = soup.select("div.CourseModulesList_moduleListItem__b8AY9")
     amount_of_modules = len(modules)
-
     total_topics = 0
+
     for module in modules:
         topic_tag = module.select_one("p.CourseModulesList_topicsCount__H_fv3")
         if topic_tag:
-            count_text = "".join(filter(str.isdigit, topic_tag.get_text()))
-            if count_text:
-                total_topics += int(count_text)
+            count_digits = "".join(filter(str.isdigit, topic_tag.text))
+            total_topics += int(count_digits) if count_digits else 0
 
     return Course(
         name=name,
-        short_description=descr,
+        short_description=description,
         duration=duration,
         amount_of_modules=amount_of_modules,
         amount_of_topics=total_topics,
@@ -66,16 +73,15 @@ def parse_course_page(url: str, name: str) -> Course:
 
 
 def get_all_courses() -> list[Course]:
-    courses = retrieve_list_of_courses()
-    all_course_data = []
-
-    for link in courses:
-        name, url = link
-        course_info = parse_course_page(url, name)
-        all_course_data.append(course_info)
-
-    return all_course_data
+    """Orchestrates the scraping of all found courses."""
+    course_list = retrieve_list_of_courses()
+    return [parse_course_page(url, name) for name, url in course_list]
 
 
 if __name__ == "__main__":
-    get_all_courses()
+    all_courses = get_all_courses()
+    for course in all_courses:
+        print(
+            f"{course.name}: {course.duration}, "
+            f"{course.amount_of_topics} topics"
+        )
