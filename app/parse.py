@@ -22,9 +22,9 @@ def serializer(course: Tag) -> Course:
     response = requests.get(BASE_URL + link_pref).content
     soup = BeautifulSoup(response, "html.parser")
     modules = len(
-        soup.select(".CourseModulesList_modulesList__C86yL > li")) - 1
+        soup.select(".CourseModulesList_itemLeft__BKWFl > .CourseModulesList_topicName__7vxtk"))
     topics = [
-        int(topic.text[0])
+        int(topic.text.split()[0])
         for topic
         in soup.select(".CourseModulesList_topicsCount__H_fv3")
     ]
@@ -46,4 +46,4 @@ def get_all_courses() -> list[Course]:
 
 
 if __name__ == "__main__":
-    get_all_courses()
+    print(get_all_courses())
