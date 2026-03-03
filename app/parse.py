@@ -24,19 +24,8 @@ def parse_single_course(course: Tag) -> Course:
                   duration=duration)
 
 
-def get_courses() -> list[Course]:
+def get_all_courses() -> list[Course]:
     text = requests.get(BASE_URL).content
     soup = BeautifulSoup(text, "html.parser")
     courses = soup.select(".ProfessionCard_cardWrapper_BCg0O")
     return [parse_single_course(course) for course in courses]
-
-
-def get_all_courses() -> list[Course]:
-    url = BASE_URL
-
-    resp = requests.get(url)
-    resp.raise_for_status()
-    soup = BeautifulSoup(resp.text, "html.parser")
-    all_courses = [parse_single_course(c)
-                   for c in soup.select(".ProfessionCard_cardWrapper_BCg0O")]
-    return all_courses
