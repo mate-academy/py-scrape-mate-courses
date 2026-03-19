@@ -1,4 +1,4 @@
-from app.parse import get_all_courses
+from app.parse import CoursesSpider
 
 FOR_SURE_THIS_COURSES = [
     "QA",
@@ -12,7 +12,7 @@ FOR_SURE_THIS_COURSES = [
 
 
 def test_get_all_courses():
-    all_courses = get_all_courses()
+    all_courses = CoursesSpider.parse()
 
     course_names = [course.name for course in all_courses]
 
