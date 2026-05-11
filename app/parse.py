@@ -4,7 +4,6 @@ import requests
 from bs4 import Tag, BeautifulSoup
 
 BASE_URL = "https://mate.academy"
-COURSES_URL = "https://mate.academy/#all-courses"
 
 
 @dataclass
@@ -25,12 +24,12 @@ def parse_single_course(course: Tag) -> Course:
 
 
 def get_course_page(soup: Tag) -> list[Course]:
-    courses = soup.select(".ProfessionCard_content__mPiVi")
+    courses = soup.select("[class*='ProfessionCard_content']")
     return [parse_single_course(course) for course in courses]
 
 
 def get_all_courses() -> list[Course]:
-    text = requests.get(COURSES_URL).content
+    text = requests.get(BASE_URL).content
     soup = BeautifulSoup(text, features="html.parser")
 
     return get_course_page(soup)
