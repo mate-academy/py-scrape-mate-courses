@@ -1,4 +1,3 @@
-import pprint
 from dataclasses import dataclass
 
 import requests
@@ -29,8 +28,8 @@ def get_single_course(course: BeautifulSoup) -> Course:
     )
 
 
-def get_all_courses(url: str) -> list[Course]:
-    response = requests.get(url)
+def get_all_courses() -> list[Course]:
+    response = requests.get(BASE_URL)
     soup = BeautifulSoup(response.content, "lxml")
     courses_cards = soup.select(
         ".ProfessionCard_content__mPiVi"
