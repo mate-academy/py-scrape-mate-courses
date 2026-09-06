@@ -16,7 +16,9 @@ class Course:
 def parse_single_course(course: Tag) -> Course:
     return Course(
         name=course.select_one(".ProfessionCard_title__m7uno").text,
-        short_description=course.select_one(".ProfessionCard_description__K8weo").text,
+        short_description=course.select_one(
+            ".ProfessionCard_description__K8weo"
+        ).text,
         duration=course.select_one(".typography_paragraphMedium__FWO7K").text
     )
 
