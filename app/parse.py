@@ -6,6 +6,13 @@ from bs4 import BeautifulSoup, Tag
 
 HOME_URL = "https://mate.academy/"
 
+# A card is either the marked element itself (when it holds the course
+# fields) or the parent of a marked element that holds only the image.
+COURSE_CARD_SELECTOR = (
+    "[data-qa='profession-card']:has([class*='_title']), "
+    ":has(> [data-qa='profession-card']:not(:has([class*='_title'])))"
+)
+
 
 @dataclass
 class Course:
@@ -34,9 +41,7 @@ def parse_single_course(card: Tag) -> Course:
 
 def get_all_courses() -> list[Course]:
     soup = get_soup(HOME_URL)
-    cards = soup.select(
-        "a[data-qa='profession-card'], a:has([data-qa='profession-card'])"
-    )
+    cards = soup.select(COURSE_CARD_SELECTOR)
     return [parse_single_course(card) for card in cards]
 
 
