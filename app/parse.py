@@ -35,7 +35,7 @@ def parse_single_course(card: Tag) -> Course:
 def get_all_courses() -> list[Course]:
     soup = get_soup(HOME_URL)
     cards = soup.select(
-        "a:has([data-qa='profession-card'])"
+        "a[data-qa='profession-card'], a:has([data-qa='profession-card'])"
     )
     return [parse_single_course(card) for card in cards]
 
